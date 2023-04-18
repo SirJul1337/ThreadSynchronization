@@ -4,23 +4,21 @@ namespace DiningPhilosophers;
 
 public class Philosopher
 {
-    public Enum Status;
-    public enum Statuses { Eat, Think }
     public int Id;
-    private int rightFork;
-    private int leftFork;
+    private int _rightFork;
+    private int _leftFork;
     public Philosopher(int id )
     {
         Id = id;
         if(id == 0)
         {
-            rightFork = 0;
-            leftFork = 4;
+            _rightFork = 0;
+            _leftFork = 4;
         }
         else 
         {
-            rightFork = Id;
-            leftFork = Id-1;
+            _rightFork = Id;
+            _leftFork = Id-1;
         }
     }
     public void Do(object callback)
@@ -40,28 +38,24 @@ public class Philosopher
         {
             try
             {
-                Monitor.TryEnter(Program.forks[rightFork]);
-                Monitor.TryEnter(Program.forks[leftFork]);
+                if (Monitor.TryEnter(Program.forks[_rightFork]))
+                {
+                    if (Monitor.TryEnter(Program.forks[_leftFork]))
+                    {
+                        Console.WriteLine("Philosopher{0} tried {1} times before eating", Id, tries);
+                        tries = 0;
+                        ate = true;
+                        Eat();
+                        Monitor.Exit(Program.forks[_leftFork]);
+                    }
+                    Monitor.Exit(Program.forks[_rightFork]);
+                }
+                tries++;
+                
             }
             finally
             {
-                if(Monitor.IsEntered(Program.forks[rightFork]) && Monitor.IsEntered(Program.forks[leftFork]))
-                {
-                    Console.WriteLine("Philosopher{0} tried {1} times before eating",Id,tries);
-                    tries = 0;
-                    ate = true;
-                    Eat();
-                }
-                else if(Monitor.IsEntered(Program.forks[rightFork]))
-                {
-                    tries++;
-                    Monitor.Exit(Program.forks[rightFork]);
-                }
-                else if (Monitor.IsEntered(Program.forks[leftFork]))
-                {
-                    tries++;
-                    Monitor.Exit(Program.forks[leftFork]);
-                }
+
                 if(tries == 100)
                 {
                     Dead();
@@ -76,7 +70,7 @@ public class Philosopher
         Console.WriteLine("Philosopher{0} is DEAD", Id);
         while (true)
         {
-
+            //Thread.Abort is deprecated
         }
     }
     private void Eat()
@@ -84,8 +78,6 @@ public class Philosopher
         Console.WriteLine("Philosopher{0} is eating", Id);
         Random r = new Random();
         Thread.Sleep(r.Next(500, 2000));
-        Monitor.Exit(Program.forks[rightFork]);
-        Monitor.Exit(Program.forks[leftFork]);
     }
     private void Think()
     {
