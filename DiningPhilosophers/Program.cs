@@ -2,7 +2,7 @@
 
 public class Program
 {
-    public static Fork[] forks = new Fork[5] { new Fork(), new Fork(), new Fork(), new Fork(),  new Fork() };
+    public static Fork[] Forks = new Fork[5] { new Fork(), new Fork(), new Fork(), new Fork(),  new Fork() };
     static Philosopher[] Philosophers = new Philosopher[5];
     public static void Main()
     {

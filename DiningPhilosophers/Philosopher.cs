@@ -38,17 +38,17 @@ public class Philosopher
         {
             try
             {
-                if (Monitor.TryEnter(Program.forks[_rightFork]))
+                if (Monitor.TryEnter(Program.Forks[_rightFork]))
                 {
-                    if (Monitor.TryEnter(Program.forks[_leftFork]))
+                    if (Monitor.TryEnter(Program.Forks[_leftFork]))
                     {
                         Console.WriteLine("Philosopher{0} tried {1} times before eating", Id, tries);
                         tries = 0;
                         ate = true;
                         Eat();
-                        Monitor.Exit(Program.forks[_leftFork]);
+                        Monitor.Exit(Program.Forks[_leftFork]);
                     }
-                    Monitor.Exit(Program.forks[_rightFork]);
+                    Monitor.Exit(Program.Forks[_rightFork]);
                 }
                 tries++;
                 
