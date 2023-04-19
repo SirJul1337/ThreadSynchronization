@@ -29,11 +29,15 @@ namespace ProducerAndConsumer
                     if (Program.Index < 3)
                     {
 
-                        for (int i = Program.Index; i < Program.cookieArray.Length-1; i++)
+                        for (int i = Program.Index; i <= Program.cookieArray.Length-1; i++)
                         {
-                            producedArrayCookies++;
-                            Program.Index = i+1;
-                            Program.cookieArray[Program.Index] = new Cookie();
+                            Program.Index = i;
+                            if(Program.cookieArray[Program.Index] == null)
+                            {
+                                producedArrayCookies++;
+                                Program.cookieArray[Program.Index] = new Cookie();
+
+                            }
 
                             
                         }
@@ -43,7 +47,7 @@ namespace ProducerAndConsumer
                     {
                         arrayWaitString = "[Array] Producer Waits...";
                     }
-
+                        
 
 
                 }
