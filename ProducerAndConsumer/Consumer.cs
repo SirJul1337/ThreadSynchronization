@@ -14,9 +14,14 @@ namespace ProducerAndConsumer
         {
 
         }
+        /// <summary>
+        /// Method trying to lock Cookie array, if  index is 0 there is no cookies and i will Wait  until pulse
+        /// If there is cookies in array in will take the cookie on the spot and put it into a consumedArrayCookies, and set the index it took it from to null.
+        /// And decrement the index and exit the lock
+        /// </summary>
+        /// <param name="callback"></param>
         public void ConsumeArray(object callback)
         {
-            //Stack
             while (true)
             {
 
@@ -49,7 +54,8 @@ namespace ProducerAndConsumer
             }
         }
         /// <summary>
-        /// 
+        /// The method will try to enter the queue check IF count is 0'
+        /// Else it will dequeue from the queue and add it to the list of consumedQueueCookies
         /// </summary>
         /// <param name="callback"></param>
         public void ConsumeQueue(object callback)

@@ -8,6 +8,11 @@ namespace FlaskeAutomaten
 {
     public class Splitter
     {
+        /// <summary>
+        /// This method will measure on the bottle object property name, and split to the specific Cola or Beerbelt.¨
+        /// It will wait if there is not bottles on the belt
+        /// </summary>
+        /// <param name="callback"></param>
         public void SplitBottles(object callback)
         {
             while (true)

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace FlaskeAutomaten
 {
+    /// <summary>
+    /// Class to represent Beer bottle, with superclass Bottle Containing name
+    /// Beerbottle contains Alchohol variable
+    /// </summary>
     public class BeerBottle:Bottle
     {
         private double Alchohol;

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FlaskeAutomaten
 {
+    /// <summary>
+    /// Abstract class bottle with name variable 
+    /// </summary>
     public abstract class Bottle
     {
         public string Name;

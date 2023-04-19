@@ -8,6 +8,9 @@ public class Program
     public static List<Cookie> consumedArrayCookies = new List<Cookie>();
     public static int Index= 0;
 
+    /// <summary>
+    /// Method below will read if answer is 0 or 1 and show producer and consumer with array or queue after what user input was
+    /// </summary>
     public static void Main()
     {
         Console.WriteLine("1. Array\n2. Queue");

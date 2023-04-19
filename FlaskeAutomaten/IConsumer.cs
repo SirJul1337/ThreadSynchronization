@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FlaskeAutomaten
 {
+    /// <summary>
+    /// Interface with GetBottle 
+    /// </summary>
     public interface IConsumer
     {
         public void GetBottle(object callback);

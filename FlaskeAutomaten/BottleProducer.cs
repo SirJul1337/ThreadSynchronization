@@ -9,12 +9,21 @@ namespace FlaskeAutomaten
     public class BottleProducer
     {
         int BottleMinimum;
+        /// <summary>
+        /// Cosntructor with parameter with minimum bottle, before stopping/starting generating bottles, 
+        /// </summary>
+        /// <param name="bottleMinimum"></param>
         public BottleProducer(int bottleMinimum)
         {
 
             BottleMinimum = bottleMinimum;
 
         }
+        /// <summary>
+        /// Method has random int generated 0-1, in the switch case, it will generate Beer or cola depending on the number,
+        /// after generation it will pulse all and exit the lock
+        /// </summary>
+        /// <param name="callback"></param>
         public void MakeBottle(object callback)
         {
             while (true)

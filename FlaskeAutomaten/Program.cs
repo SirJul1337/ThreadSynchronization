@@ -7,6 +7,13 @@ public class Program
     public static Queue<BeerBottle> BeerBelt = new();
     public static List<ColaBottle> ConsumedColaBottles = new();
     public static List<BeerBottle> ConsumedBeerBottle = new();
+    /// <summary>
+    /// Main Method Instaciating BottleProducer and Splitter.
+    /// Instanciating List of IConsumer called consumer, where i put in ColaConsumer and BeerConsumer
+    /// Where I go through the list and I USE the Interface to Start thread (ThreadPool) on GetBottle that is IMPLEMENTED in ColaConsumer And BeerConsumer
+    /// Starting Splitter and Producer With ThreadPool
+    /// Main Thread wil then write to console count on different list and queues to see the application work
+    /// </summary>
     public static void Main()
     {
         BottleProducer producer = new(5);

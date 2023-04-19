@@ -11,7 +11,7 @@ namespace ProducerAndConsumer
     public class Producer
     {
         /// <summary>
-        /// Produces cookies in array, array manager should look where to put cookie
+        /// Produces cookies in array, Index telling where to put cookie, making sure index is null before putting cookie. PulseAll when done putting in cookies
         /// </summary>
         public void ProduceArray(object callback)
         {
@@ -66,7 +66,7 @@ namespace ProducerAndConsumer
         }
         /// <summary>
         /// Method producing cookies in the queue if there is less than n coockies (n = 3) 
-        /// It will PulseAll waiting on the coockieQ everytime is preduces
+        /// It will PulseAll waiting on the coockieQ when it is done producing
         /// </summary>
         /// <param name="callback"></param>
         public void ProduceQueue(object callback)
