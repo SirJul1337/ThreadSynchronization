@@ -8,35 +8,45 @@ namespace ProducerAndConsumer
 {
     public class Consumer
     {
-        private List<Cookie> consumedArrayCookies = new List<Cookie>();
-        
+
 
         public Consumer()
         {
 
         }
-        public void ConsumeArray()
+        public void ConsumeArray(object callback)
         {
             //Stack
+            while (true)
+            {
 
-            try
-            {
-                if (Monitor.TryEnter(Program.cookieArray))
+                try
                 {
-                    for (int i = 0; i < Program.cookieArray.Length; i++)
+                    if (Monitor.TryEnter(Program.cookieArray))
                     {
-                        if (Program.cookieArray[i] != null)
+                        if (Program.Index <=1)
                         {
-                            consumedArrayCookies.Add(Program.cookieArray[i]);
-                            Program.cookieArray[i] = null;
+                            Monitor.Wait(Program.cookieArray);
                         }
+                        else
+                        {
+                            for (int i = Program.Index; i > 0; i--)
+                            {
+
+                                Program.consumedArrayCookies.Add(Program.cookieArray[i]);
+                                Program.cookieArray[i] = null;
+                                Program.Index--;
+                            }
+                            Monitor.Exit(Program.cookieArray);
+                        }
+
                     }
-                    Monitor.Wait(Program.cookieArray);
+
                 }
-            }
-            finally
-            {
-                Monitor.Exit(Program.cookieArray);
+                finally
+                {
+                    Thread.Sleep(200);
+                }
             }
         }
         /// <summary>
@@ -65,7 +75,7 @@ namespace ProducerAndConsumer
                 }
                 finally
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(200);
                 }
             }
         }
