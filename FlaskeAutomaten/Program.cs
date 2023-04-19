@@ -31,8 +31,8 @@ public class Program
             if (Monitor.TryEnter(BottleBelt))
             {
                 Console.WriteLine("Bottles in first buffer: {0}",BottleBelt.Count);
-                Console.WriteLine("Split cola bottles: {0}",ColaBelt.Count);
-                Console.WriteLine("Split beer bottles: {0}",BeerBelt.Count);
+                Console.WriteLine("Cola Buffer: {0}",ColaBelt.Count);
+                Console.WriteLine("Beer Buffer: {0}",BeerBelt.Count);
                 Console.WriteLine("Consumed cola bottles: {0}", ConsumedColaBottles.Count);
                 Console.WriteLine("Consumed beer bottles: {0}", ConsumedBeerBottle.Count);
 
