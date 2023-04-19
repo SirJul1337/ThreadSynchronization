@@ -15,27 +15,25 @@ namespace ProducerAndConsumer
         /// </summary>
         public void ProduceArray(object callback)
         {
-            string arrayWaitString = "";
             int producedArrayCookies = 0;
             while (true)
             {
 
+                string arrayWaitString = "";
 
-                Monitor.Enter(Program.cookieArray);
                 try
                 {
+                    Monitor.Enter(Program.cookieArray);
                     Console.Clear();
                     //TODO: Manager needed
                     if (Program.Index < 3)
                     {
 
-                        for (int i = Program.Index; i < Program.cookieArray.Length; i++)
+                        for (int i = Program.Index; i < Program.cookieArray.Length-1; i++)
                         {
-
-
-                                producedArrayCookies++;
-                                Program.Index = i;
-                                Program.cookieArray[i] = new Cookie();
+                            producedArrayCookies++;
+                            Program.Index = i+1;
+                            Program.cookieArray[Program.Index] = new Cookie();
 
                             
                         }
@@ -43,7 +41,7 @@ namespace ProducerAndConsumer
                     }
                     else
                     {
-                        arrayWaitString = "[Queues] Producer Waits...";
+                        arrayWaitString = "[Array] Producer Waits...";
                     }
 
 
@@ -55,10 +53,10 @@ namespace ProducerAndConsumer
                     Monitor.Exit(Program.cookieArray);
                     Console.WriteLine("[Array] Produced cookies: {0}", producedArrayCookies);
 
-                    Console.WriteLine("[Array] Cookies in array: {0}", (Program.Index) + 1);
+                    Console.WriteLine("[Array] Cookies in array: {0}", (Program.Index)+1);
                     Console.WriteLine("[Array] Consumed cookies: {0}", Program.consumedArrayCookies.Count);
                     Console.WriteLine("{0}", arrayWaitString);
-                    Thread.Sleep(500);
+                    Thread.Sleep(200);
                 }
             }
         }

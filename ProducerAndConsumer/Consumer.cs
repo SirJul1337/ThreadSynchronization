@@ -24,19 +24,18 @@ namespace ProducerAndConsumer
                 {
                     if (Monitor.TryEnter(Program.cookieArray))
                     {
-                        if (Program.Index <=1)
+                        if (Program.Index == 0)
                         {
                             Monitor.Wait(Program.cookieArray);
                         }
                         else
                         {
-                            for (int i = Program.Index; i > 0; i--)
-                            {
 
-                                Program.consumedArrayCookies.Add(Program.cookieArray[i]);
-                                Program.cookieArray[i] = null;
-                                Program.Index--;
-                            }
+
+                            Program.consumedArrayCookies.Add(Program.cookieArray[Program.Index]);
+                            Program.cookieArray[Program.Index] = null;
+                            Program.Index--;
+                            
                             Monitor.Exit(Program.cookieArray);
                         }
 
