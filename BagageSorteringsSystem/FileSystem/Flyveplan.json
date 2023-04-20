@@ -1,0 +1,14 @@
+﻿{
+  "Flyveplan": [
+    {
+      "GateId": 1,
+      "Afgangstid": "2023-04-23T09:15:00",
+      "Destination": "New York"
+    },
+    {
+      "GateId": 2,
+      "Afgangstid": "2023-04-23T10:30:00",
+      "Destination":  "Alabama"
+    }
+  ]
+}

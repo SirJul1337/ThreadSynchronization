@@ -43,9 +43,13 @@ namespace BagageSorteringsSystem
                 }
                 finally
                 {
-                    Thread.Sleep(200);
+                    Thread.Sleep(1000);
                 }
             }
+        }
+        public void LostBaggage()
+        {
+
         }
     }
 }

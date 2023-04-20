@@ -17,20 +17,37 @@ namespace BagageSorteringsSystem
         {
             while (true)
             {
-                if (Monitor.TryEnter(Program.TerminalQueues[_terminalId]))
+                if (Program.TerminalQueues.ContainsKey(_terminalId) &&Monitor.TryEnter(Program.TerminalQueues[_terminalId]))
                 {
                     if (Program.TerminalQueues[_terminalId].Count() == 0)
                     {
                         Monitor.Wait(Program.TerminalQueues[_terminalId]);
                     }
-                    if (Monitor.TryEnter(Program.PlaneBaggage[_terminalId]))
+                    if (Program.Planes.ContainsKey(_terminalId))
                     {
-                        Program.PlaneBaggage[_terminalId].Add(Program.TerminalQueues[_terminalId].Dequeue());
-                        Monitor.Exit(Program.PlaneBaggage[_terminalId]);
+                        if (Monitor.TryEnter(Program.Planes[_terminalId].Baggages))
+                        {
+                            Program.Planes[_terminalId].Baggages.Enqueue(Program.TerminalQueues[_terminalId].Dequeue());
+                            Monitor.Exit(Program.Planes[_terminalId].Baggages);
+
+                        }
+                        Monitor.Exit(Program.TerminalQueues[_terminalId]);
                     }
-                    Monitor.Exit(Program.TerminalQueues[_terminalId]);
+                    else
+                    {
+                        if(Monitor.TryEnter(Program.LostBaggage))
+                        {
+                            while (Program.TerminalQueues[_terminalId].Count != 0)
+                            {
+                                Program.LostBaggage.Enqueue(Program.TerminalQueues[_terminalId].Dequeue());
+
+                            }
+                            Monitor.Exit(Program.LostBaggage);
+                            Program.TerminalQueues.Remove(_terminalId);
+                        }
+                    }
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
             }
             
         }

@@ -23,21 +23,29 @@ namespace BagageSorteringsSystem
                 try
                 {
 
-
-                    if (Monitor.TryEnter(Program.Baggages))
+                    if (Monitor.TryEnter(Program.CustomerLine))
                     {
-                        if (Program.Baggages.Count < 50)
+                        if (Program.CustomerLine.Count == 0)
                         {
-                            Random r = new Random();
-                            Program.Baggages.Enqueue(new Baggage("Test", r.Next(1, 3)));
-                            Monitor.PulseAll(Program.Baggages);
+                            Monitor.Wait(Program.CustomerLine);
                         }
-                        Monitor.Exit(Program.Baggages);
+                        if (Monitor.TryEnter(Program.Baggages))
+                        {
+                            if(Program.Baggages.Count < 50)
+                            {
+                                Program.Baggages.Enqueue(Program.CustomerLine.Dequeue());
+                                Monitor.PulseAll(Program.Baggages);
+
+                            }
+                            Monitor.Exit(Program.Baggages);
+                        }
+                        Monitor.Exit(Program.CustomerLine);
                     }
+
                 }
                 finally
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(500);
                 }
             }
         }
