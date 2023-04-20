@@ -25,15 +25,28 @@ namespace BagageSorteringsSystem
                         if (Monitor.TryEnter(Program.TerminalQueues))
                         {
 
-                            if (Program.TerminalQueues.ContainsKey(_gateId) && Monitor.TryEnter(Program.TerminalQueues[_gateId]))
+                            if (Program.TerminalQueues.ContainsKey(_gateId))
                             {
-                                if (Program.TerminalQueues[_gateId].Count() < 30)
+                                if (Monitor.TryEnter(Program.TerminalQueues[_gateId]))
                                 {
-                                    Program.TerminalQueues[_gateId].Enqueue(Program.Baggages.Dequeue());
-                                }
-                                Monitor.PulseAll(Program.TerminalQueues[_gateId]);
-                                Monitor.Exit(Program.TerminalQueues[_gateId]);
 
+                                    if (Program.TerminalQueues[_gateId].Count() < 30)
+                                    {
+                                        Program.TerminalQueues[_gateId].Enqueue(Program.Baggages.Dequeue());
+                                    }
+                                    Monitor.PulseAll(Program.TerminalQueues[_gateId]);
+                                    Monitor.Exit(Program.TerminalQueues[_gateId]);
+                                }
+
+                            }
+                            else
+                            {
+                                if (Monitor.TryEnter(Program.LostBaggage))
+                                {
+                                    Program.LostBaggage.Enqueue(Program.Baggages.Dequeue());
+                                    Monitor.Exit(Program.LostBaggage);
+                                    
+                                }
                             }
                             Monitor.Exit(Program.TerminalQueues);
                         }
