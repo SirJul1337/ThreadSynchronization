@@ -33,8 +33,8 @@ namespace BagageSorteringsSystem
                                     if (Program.TerminalQueues[_gateId].Count() < 30)
                                     {
                                         Program.TerminalQueues[_gateId].Enqueue(Program.Baggages.Dequeue());
+                                        Monitor.PulseAll(Program.TerminalQueues[_gateId]);
                                     }
-                                    Monitor.PulseAll(Program.TerminalQueues[_gateId]);
                                     Monitor.Exit(Program.TerminalQueues[_gateId]);
                                 }
 

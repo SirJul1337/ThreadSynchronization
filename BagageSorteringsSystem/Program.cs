@@ -23,54 +23,47 @@ public class Program
         Customer customer = new Customer();
         CheckIn checkIn = new();
         BaggageHandling handling = new BaggageHandling();
+        ControlTower controlTower = new ControlTower();
 
         ThreadPool.QueueUserWorkItem(customer.AutoGenerate);
         ThreadPool.QueueUserWorkItem(checkIn.Open);
         ThreadPool.QueueUserWorkItem(handling.Sorting);
-        FlyingPlan flyingPlan = ConvertFileToFlyingPlan(ReadFile());
+        ThreadPool.QueueUserWorkItem(controlTower.ControlGates);
 
-        for (int i = 0; i < flyingPlan.Flyveplan.Count(); i++)
-        {
-            TerminalQueues.Add(flyingPlan.Flyveplan[i].GateId, new Queue<Baggage>());
-            Planes.Add(flyingPlan.Flyveplan[i].GateId, new Plane(flyingPlan.Flyveplan[i].GateId, flyingPlan.Flyveplan[i].MaxCustomers, flyingPlan.Flyveplan[i].Destination));
-            Logger.Information("Plane {0} added", flyingPlan.Flyveplan[i].GateId);
-            Logger.Information("TerminalQueue {0} added", flyingPlan.Flyveplan[i].GateId);
 
-        }
 
         foreach (var plane in Planes)
         {
-            ThreadPool.QueueUserWorkItem(plane.Value.Dock);
+            
 
         }
-        foreach (var terminalQueue in TerminalQueues.Keys)
-        {
-            Terminal terminal = new Terminal(terminalQueue);
-            Terminals.Add(terminalQueue, terminal);
-            ThreadPool.QueueUserWorkItem(Terminals[terminalQueue].ConsumeBaggage);
+        //if (Monitor.TryEnter(TerminalQueues))
+        //{
+        //    if(TerminalQueues.Count == 0)
+        //    {
+        //        Monitor.Wait(TerminalQueues);
+        //    }
+        //    foreach (var terminalQueue in TerminalQueues.Keys)
+        //    {
+        //        //Terminal terminal = new Terminal(terminalQueue);
+        //        //Terminals.Add(terminalQueue, terminal);
+        //        ThreadPool.QueueUserWorkItem(Terminals[terminalQueue].ConsumeBaggage);
 
-        }
+        //    }
+        //    Monitor.Exit(TerminalQueues);
+
+        //}
 
         
 
         while (true)
         {
             QueueOverview();
-            Thread.Sleep(50);
+            Thread.Sleep(10);
 
         }
     }
-    private static string ReadFile()
-    {
-        string path = @"../../../FileSystem/Flyveplan.json";
-        string file = File.ReadAllText(path);
-        return file;
-    }
-    private static FlyingPlan ConvertFileToFlyingPlan(string input)
-    {
-        FlyingPlan plan = JsonConvert.DeserializeObject<FlyingPlan>(input);
-        return plan;
-    }
+
     private static void QueueOverview()
     {
         Console.Clear();
@@ -88,9 +81,9 @@ public class Program
             {
                 int id = item.Key;
                 Console.WriteLine("----------------------------------------------");
-                Console.WriteLine("Terminal {0} BaggageCount: {1}", id, TerminalQueues[id].Count);
                 if (Planes.ContainsKey(id) && Monitor.TryEnter(Planes[id].Baggages))
                 {
+                    Console.WriteLine("Terminal {0} BaggageCount: {1}", id, TerminalQueues[id].Count);
                     Console.WriteLine("Distination {0} with max {1} customers ", Planes[id].Destination, Planes[id].MaxCount);
                     Console.WriteLine("Plane {0} baggage onboard: {1}", id, Planes[id].Baggages.Count);
                     Monitor.Exit(Planes[id].Baggages);

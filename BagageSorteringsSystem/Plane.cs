@@ -21,12 +21,13 @@ namespace BagageSorteringsSystem
         }
         public void Dock(object callback)
         {
+
             Monitor.Enter(Program.Terminals[Id]);
+            Program.Logger.Information("Plane {0} Docked to gate");
             while (!_takeOff)
             {
                 if (Baggages.Count < MaxCount)
                 {
-                    Program.Logger.Information("Plane {0} not yet filled", Id);
                     Thread.Sleep(2000);
                 }
                 else
@@ -34,6 +35,7 @@ namespace BagageSorteringsSystem
                     Fly();
                 }
             }
+            Monitor.Pulse(Program.Terminals[Id]);
             Monitor.Exit(Program.Terminals[Id]);
         }
         public void Fly()

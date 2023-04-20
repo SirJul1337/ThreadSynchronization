@@ -19,14 +19,15 @@ namespace BagageSorteringsSystem
             {
                 if (Program.TerminalQueues.ContainsKey(_terminalId) &&Monitor.TryEnter(Program.TerminalQueues[_terminalId]))
                 {
-                    if (Program.TerminalQueues[_terminalId].Count() == 0)
-                    {
-                        Monitor.Wait(Program.TerminalQueues[_terminalId]);
-                    }
                     if (Program.Planes.ContainsKey(_terminalId))
                     {
+                        //TODO: fix problem with Queue is empty
                         if (Monitor.TryEnter(Program.Planes[_terminalId].Baggages))
                         {
+                            if (Program.TerminalQueues[_terminalId].Count() == 0)
+                            {
+                                Monitor.Wait(Program.TerminalQueues[_terminalId]);
+                            }
                             Program.Planes[_terminalId].Baggages.Enqueue(Program.TerminalQueues[_terminalId].Dequeue());
                             Monitor.Exit(Program.Planes[_terminalId].Baggages);
 

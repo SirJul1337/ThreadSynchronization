@@ -1,0 +1,16 @@
+﻿{
+  "Planes": [
+    {
+      "Name": "Boeing 747",
+      "Capacity": 330
+    },
+    {
+      "Name": "Boeing 727",
+      "Capacity":  170
+    }
+    {
+      "Name": "Luxury Jet",
+      "Capacity":  22
+    }
+  ]
+}
