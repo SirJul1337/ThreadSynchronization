@@ -21,7 +21,7 @@ namespace BagageSorteringsSystem
                 {
                     if (Program.Planes.ContainsKey(_terminalId))
                     {
-                        //TODO: fix problem with Queue is empty
+
                         if (Monitor.TryEnter(Program.Planes[_terminalId].Baggages))
                         {
                             if (Program.TerminalQueues[_terminalId].Count() == 0)
@@ -48,7 +48,7 @@ namespace BagageSorteringsSystem
                         }
                     }
                 }
-                Thread.Sleep(2000);
+                Thread.Sleep(1500);
             }
             
         }

@@ -11,13 +11,16 @@ namespace BagageSorteringsSystem
         private bool _takeOff = false;
         public int Id;
         public string Destination;
+        public DateTimeOffset Time;
         public int MaxCount;
         public Queue<Baggage> Baggages = new Queue<Baggage>();
-        public Plane(int id, int maxCount, string destination)
+        public Plane(int id, int maxCount, string destination, DateTimeOffset takeOffTime)
         {
             Id = id;
             MaxCount = maxCount;
             Destination = destination;
+            Time = takeOffTime;
+
         }
         public void Dock(object callback)
         {
@@ -27,13 +30,13 @@ namespace BagageSorteringsSystem
             Program.Logger.Information("Plane {0} Docked to gate");
             while (!_takeOff)
             {
-                if (Baggages.Count < MaxCount)
+                if (Baggages.Count >= MaxCount || DateTime.Now >= Time  )
                 {
-                    Thread.Sleep(2000);
+                    Fly();
                 }
                 else
                 {
-                    Fly();
+                    Thread.Sleep(1500);
                 }
             }
             Monitor.Pulse(Program.Terminals[Id]);

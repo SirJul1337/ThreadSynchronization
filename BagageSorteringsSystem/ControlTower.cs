@@ -23,7 +23,7 @@ namespace BagageSorteringsSystem
                     {
 
                         Program.TerminalQueues.Add(Program.FlyingPlan.Flyveplan[i].GateId, new Queue<Baggage>());
-                        Program.Planes.Add(Program.FlyingPlan.Flyveplan[i].GateId, new Plane(Program.FlyingPlan.Flyveplan[i].GateId, Program.FlyingPlan.Flyveplan[i].MaxCustomers, Program.FlyingPlan.Flyveplan[i].Destination));
+                        Program.Planes.Add(Program.FlyingPlan.Flyveplan[i].GateId, new Plane(Program.FlyingPlan.Flyveplan[i].GateId, Program.FlyingPlan.Flyveplan[i].MaxCustomers, Program.FlyingPlan.Flyveplan[i].Destination, Program.FlyingPlan.Flyveplan[i].Afgangstid));
                         Terminal terminal = new Terminal(Program.FlyingPlan.Flyveplan[i].GateId);
                         Program.Terminals.Add(Program.FlyingPlan.Flyveplan[i].GateId, terminal);
                         ThreadPool.QueueUserWorkItem(Program.Terminals[Program.FlyingPlan.Flyveplan[i].GateId].ConsumeBaggage);

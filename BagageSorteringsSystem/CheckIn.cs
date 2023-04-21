@@ -11,13 +11,16 @@ namespace BagageSorteringsSystem
     /// </summary>
     public class CheckIn
     {
-        private bool _abort = false;
+        private bool _abort;
+        public bool Alive;
         public CheckIn()
         {
 
         }
         public void Open(object callback)
         {
+            _abort = false;
+            Alive = true;
             while (!_abort)
             {
                 try
@@ -25,12 +28,12 @@ namespace BagageSorteringsSystem
 
                     if (Monitor.TryEnter(Program.CustomerLine))
                     {
-                        if (Program.CustomerLine.Count == 0)
-                        {
-                            Monitor.Wait(Program.CustomerLine);
-                        }
                         if (Monitor.TryEnter(Program.Baggages))
                         {
+                            if (Program.CustomerLine.Count == 0)
+                            {
+                                Monitor.Wait(Program.CustomerLine);
+                            }
                             if(Program.Baggages.Count < 50)
                             {
                                 Program.Baggages.Enqueue(Program.CustomerLine.Dequeue());
@@ -45,12 +48,13 @@ namespace BagageSorteringsSystem
                 }
                 finally
                 {
-                    Thread.Sleep(500);
+                    Thread.Sleep(700);
                 }
             }
         }
-        public void Close()
+        public void Close(object callback)
         {
+            Alive = false;
             _abort = true;
         }
     }
