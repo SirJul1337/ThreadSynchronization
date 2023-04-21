@@ -30,6 +30,7 @@ public class Program
         NavDictionary.Add(ConsoleKey.M, checkInManager.Remove);
         while (true)
         {
+            Console.Clear();
             if (NavDictionary.ContainsKey(NavKey))
             {
                 NavDictionary[NavKey].Invoke();
@@ -60,7 +61,7 @@ public class Program
     private static void QueueOverview()
     {
 
-        Console.Clear();
+        
         
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine("             {0}                          ", DateTime.Now);
@@ -98,7 +99,6 @@ public class Program
     }
     private static void ViewFlyPlan()
     {
-        Console.Clear();
         if (Monitor.TryEnter(FlyingPlan.Flyveplan))
         {
             for (int i = 0; i < FlyingPlan.Flyveplan.Count(); i++)
@@ -112,7 +112,6 @@ public class Program
     }
     private static void CheckInOverview()
     {
-        Console.Clear();
         var openList = CheckIns.Where(c => c.Alive == true).ToList();
         for (int i = 0; i < openList.Count; i++)
         {
