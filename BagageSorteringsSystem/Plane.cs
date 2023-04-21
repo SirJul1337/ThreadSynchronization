@@ -23,6 +23,7 @@ namespace BagageSorteringsSystem
         {
 
             Monitor.Enter(Program.Terminals[Id]);
+            
             Program.Logger.Information("Plane {0} Docked to gate");
             while (!_takeOff)
             {

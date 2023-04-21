@@ -13,21 +13,27 @@ namespace BagageSorteringsSystem
         public void ControlGates(object callback)
         {
 
-            FlyingPlan flyingPlan = ConvertFileToFlyingPlan(ReadFile());
-            if(Monitor.TryEnter(Program.TerminalQueues))
-            { 
-                for (int i = 0; i < flyingPlan.Flyveplan.Count(); i++)
+            Program.FlyingPlan = ConvertFileToFlyingPlan(ReadFile());
+            if (Monitor.TryEnter(Program.TerminalQueues))
+            {
+                if (Monitor.TryEnter(Program.FlyingPlan.Flyveplan))
                 {
-                    Program.TerminalQueues.Add(flyingPlan.Flyveplan[i].GateId, new Queue<Baggage>());
-                    Program.Planes.Add(flyingPlan.Flyveplan[i].GateId, new Plane(flyingPlan.Flyveplan[i].GateId, flyingPlan.Flyveplan[i].MaxCustomers, flyingPlan.Flyveplan[i].Destination));
-                    Terminal terminal = new Terminal(flyingPlan.Flyveplan[i].GateId);
-                    Program.Terminals.Add(flyingPlan.Flyveplan[i].GateId, terminal);
-                    ThreadPool.QueueUserWorkItem(Program.Terminals[flyingPlan.Flyveplan[i].GateId].ConsumeBaggage);
-                    ThreadPool.QueueUserWorkItem(Program.Planes[flyingPlan.Flyveplan[i].GateId].Dock);
-                    Program.Logger.Information("Plane {0} added", flyingPlan.Flyveplan[i].GateId);
-                    Program.Logger.Information("TerminalQueue {0} added", flyingPlan.Flyveplan[i].GateId);
+
+                    for (int i = 0; i < Program.FlyingPlan.Flyveplan.Count(); i++)
+                    {
+
+                        Program.TerminalQueues.Add(Program.FlyingPlan.Flyveplan[i].GateId, new Queue<Baggage>());
+                        Program.Planes.Add(Program.FlyingPlan.Flyveplan[i].GateId, new Plane(Program.FlyingPlan.Flyveplan[i].GateId, Program.FlyingPlan.Flyveplan[i].MaxCustomers, Program.FlyingPlan.Flyveplan[i].Destination));
+                        Terminal terminal = new Terminal(Program.FlyingPlan.Flyveplan[i].GateId);
+                        Program.Terminals.Add(Program.FlyingPlan.Flyveplan[i].GateId, terminal);
+                        ThreadPool.QueueUserWorkItem(Program.Terminals[Program.FlyingPlan.Flyveplan[i].GateId].ConsumeBaggage);
+                        ThreadPool.QueueUserWorkItem(Program.Planes[Program.FlyingPlan.Flyveplan[i].GateId].Dock);
+                        Program.Logger.Information("Plane {0} added", Program.FlyingPlan.Flyveplan[i].GateId);
+                        Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.Flyveplan[i].GateId);
+                    }
+                    Monitor.Exit(Program.FlyingPlan.Flyveplan);
+                    Monitor.PulseAll(Program.TerminalQueues);
                 }
-                Monitor.PulseAll(Program.TerminalQueues);
                 Monitor.Exit(Program.TerminalQueues);
 
             }
