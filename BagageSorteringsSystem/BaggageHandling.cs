@@ -8,6 +8,10 @@ namespace BagageSorteringsSystem
 {
     public class BaggageHandling
     {
+        /// <summary>
+        /// Used for checking what id a bag is to sort the bag out to the right terminals
+        /// </summary>
+        /// <param name="callback"></param>
         public void Sorting(object callback)
         {
             while (true)

@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiningPhilosophers", "Dinin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProducerAndConsumer", "ProducerAndConsumer\ProducerAndConsumer.csproj", "{44FBB0AA-094A-4F8E-8110-11A6F0306EA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlaskeAutomaten", "FlaskeAutomaten\FlaskeAutomaten.csproj", "{62E8CF94-9AD6-4189-B49A-A7DB935953B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlaskeAutomaten", "FlaskeAutomaten\FlaskeAutomaten.csproj", "{62E8CF94-9AD6-4189-B49A-A7DB935953B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BagageSorteringsSystem", "BagageSorteringsSystem\BagageSorteringsSystem.csproj", "{78E8219E-0EBA-4229-A8D4-7D3EBE6812D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BagageSorteringsSystem", "BagageSorteringsSystem\BagageSorteringsSystem.csproj", "{78E8219E-0EBA-4229-A8D4-7D3EBE6812D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaggageSortertingSystemWpf", "BaggageSortertingSystemWpf\BaggageSortertingSystemWpf.csproj", "{002FD9D9-1A82-45AC-A09D-5D9C639A0C4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{78E8219E-0EBA-4229-A8D4-7D3EBE6812D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78E8219E-0EBA-4229-A8D4-7D3EBE6812D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78E8219E-0EBA-4229-A8D4-7D3EBE6812D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{002FD9D9-1A82-45AC-A09D-5D9C639A0C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{002FD9D9-1A82-45AC-A09D-5D9C639A0C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{002FD9D9-1A82-45AC-A09D-5D9C639A0C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{002FD9D9-1A82-45AC-A09D-5D9C639A0C4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

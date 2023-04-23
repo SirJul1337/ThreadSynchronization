@@ -2,25 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace BagageSorteringsSystem
+namespace BaggageSortertingSystemWpf
 {
     public class Customer
     {
         public Customer()
         {
-            
+
         }
 
         public void LoadFromFile()
         {
 
         }
-        /// <summary>
-        /// Customer that just keep generating Customer baggeges
-        /// </summary>
-        /// <param name="callback"></param>
         public void AutoGenerate(object callback)
         {
             while (true)
@@ -28,15 +25,15 @@ namespace BagageSorteringsSystem
                 try
                 {
 
-                    if (Monitor.TryEnter(Program.CustomerLine))
+                    if (Monitor.TryEnter(MainWindow.CustomerLine))
                     {
-                        if (Program.CustomerLine.Count < 100)
+                        if (MainWindow.CustomerLine.Count < 100)
                         {
                             Random r = new Random();
-                            Program.CustomerLine.Enqueue(new Baggage("Test", r.Next(1, 3)));
-                            Monitor.PulseAll(Program.CustomerLine);
+                            MainWindow.CustomerLine.Enqueue(new Baggage("Test", r.Next(1, 3)));
+                            Monitor.PulseAll(MainWindow.CustomerLine);
                         }
-                        Monitor.Exit(Program.CustomerLine);
+                        Monitor.Exit(MainWindow.CustomerLine);
                     }
                 }
                 finally

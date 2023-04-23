@@ -1,1 +1,10 @@
-﻿
+﻿[
+  {
+    "Name": "West wing",
+    "GateId": 1
+  },
+  {
+    "Name": "North Wing",
+    "GateId": 2
+  }
+]

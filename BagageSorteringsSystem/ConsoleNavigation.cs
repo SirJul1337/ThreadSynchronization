@@ -9,6 +9,9 @@ namespace BagageSorteringsSystem
 {
     public class ConsoleNavigation
     {
+        /// <summary>
+        /// Method to see what there is put into the console, used for navigation
+        /// </summary>
         public void StartNavigations()
         {
             while (true)

@@ -9,6 +9,9 @@ namespace BagageSorteringsSystem
     public class CheckInManager
     {
         private static int _checkInIndex = 0;
+        /// <summary>
+        /// Used for adding more Checkin boxed
+        /// </summary>
         public void Add()
         {
             if (_checkInIndex <= Program.CheckIns.Length-1)
@@ -17,6 +20,9 @@ namespace BagageSorteringsSystem
                 _checkInIndex++;
             }
         }
+        /// <summary>
+        /// Used for closing checkingboxes
+        /// </summary>
         public void Remove() 
         {
             if(_checkInIndex >= 0)

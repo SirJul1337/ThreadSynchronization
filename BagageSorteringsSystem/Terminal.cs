@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,45 +9,52 @@ namespace BagageSorteringsSystem
 {
     public class Terminal
     {
-        private int _terminalId;
-        public Terminal(int terminalId)
-        {
-            _terminalId= terminalId;
-        }
+        [JsonProperty("Name")]
+        public string Name { get; set; }
+
+        [JsonProperty("GateId")]
+        public int GateId { get; set; }
+
+        public bool PlaneDocked = false;
+        /// <summary>
+        /// Consumes baggeges from assigned gate id, and if no plane is docked, it will put baggs in lost baggage
+        /// </summary>
+        /// <param name="callback"></param>
         public void ConsumeBaggage(object callback)
         {
             while (true)
             {
-                if (Program.TerminalQueues.ContainsKey(_terminalId) &&Monitor.TryEnter(Program.TerminalQueues[_terminalId]))
+                if (Program.TerminalQueues.ContainsKey(GateId) && Monitor.TryEnter(Program.TerminalQueues[GateId]))
                 {
-                    if (Program.Planes.ContainsKey(_terminalId))
+                    if (Program.Planes.ContainsKey(GateId) && PlaneDocked)
                     {
 
-                        if (Monitor.TryEnter(Program.Planes[_terminalId].Baggages))
+                        if (Monitor.TryEnter(Program.Planes[GateId].Baggages))
                         {
-                            if (Program.TerminalQueues[_terminalId].Count() == 0)
+                            if (Program.TerminalQueues[GateId].Count() == 0)
                             {
-                                Monitor.Wait(Program.TerminalQueues[_terminalId]);
+                                Monitor.Wait(Program.TerminalQueues[GateId]);
                             }
-                            Program.Planes[_terminalId].Baggages.Enqueue(Program.TerminalQueues[_terminalId].Dequeue());
-                            Monitor.Exit(Program.Planes[_terminalId].Baggages);
+                            Program.Planes[GateId].Baggages.Enqueue(Program.TerminalQueues[GateId].Dequeue());
+                            Monitor.Exit(Program.Planes[GateId].Baggages);
 
                         }
-                        Monitor.Exit(Program.TerminalQueues[_terminalId]);
+                        
                     }
                     else
                     {
                         if(Monitor.TryEnter(Program.LostBaggage))
                         {
-                            while (Program.TerminalQueues[_terminalId].Count != 0)
+                            while (Program.TerminalQueues[GateId].Count != 0)
                             {
-                                Program.LostBaggage.Enqueue(Program.TerminalQueues[_terminalId].Dequeue());
+                                Program.LostBaggage.Enqueue(Program.TerminalQueues[GateId].Dequeue());
 
                             }
                             Monitor.Exit(Program.LostBaggage);
-                            Program.TerminalQueues.Remove(_terminalId);
+                            //Program.TerminalQueues.Remove(_terminalId);
                         }
                     }
+                    Monitor.Exit(Program.TerminalQueues[GateId]);
                 }
                 Thread.Sleep(1500);
             }

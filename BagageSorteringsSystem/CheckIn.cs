@@ -17,6 +17,10 @@ namespace BagageSorteringsSystem
         {
 
         }
+        /// <summary>
+        /// When checkin box is open it will consume from customer line, and put bagges into sortingSystem baggges queue if there is space
+        /// </summary>
+        /// <param name="callback"></param>
         public void Open(object callback)
         {
             _abort = false;
@@ -52,6 +56,10 @@ namespace BagageSorteringsSystem
                 }
             }
         }
+        /// <summary>
+        /// Used for closing thread, cause thread.Abort is deprecated
+        /// </summary>
+        /// <param name="callback"></param>
         public void Close(object callback)
         {
             Alive = false;

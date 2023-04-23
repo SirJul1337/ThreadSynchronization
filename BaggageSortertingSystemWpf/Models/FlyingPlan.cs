@@ -1,20 +1,18 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BagageSorteringsSystem;
+namespace BaggageSortertingSystemWpf.Models;
 
-/// <summary>
-/// Used to store all Deserialized object in json
-/// </summary>
 public partial class FlyingPlan
 {
     [JsonProperty("Flyveplan")]
-    public List<Flyveplan> Flyveplan { get; set; }
+    public Flyveplan[] Flyveplan { get; set; }
 }
 
-/// <summary>
-/// Used for deserializing objects in json
-/// </summary>
 public partial class Flyveplan
 {
     [JsonProperty("GateId")]

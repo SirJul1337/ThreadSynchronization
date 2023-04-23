@@ -4,11 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BagageSorteringsSystem
+namespace BaggageSortertingSystemWpf
 {
-    /// <summary>
-    /// Class for baggage object
-    /// </summary>
     public class Baggage
     {
         public string Name { get; set; }
