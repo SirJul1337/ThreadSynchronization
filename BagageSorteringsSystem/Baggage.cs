@@ -13,6 +13,7 @@ namespace BagageSorteringsSystem
     {
         public string Name { get; set; }
         public int GateId { get; set; }
+        public List<string> Log { get; set; }
         public Baggage(string name, int gateId)
         {
             Name = name;

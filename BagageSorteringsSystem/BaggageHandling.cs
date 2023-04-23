@@ -36,7 +36,9 @@ namespace BagageSorteringsSystem
 
                                     if (Program.TerminalQueues[_gateId].Count() < 30)
                                     {
-                                        Program.TerminalQueues[_gateId].Enqueue(Program.Baggages.Dequeue());
+                                        Baggage baggage = Program.Baggages.Dequeue();
+                                        baggage.Log.Add(String.Format("{0} | Arrived in sortingsystem", DateTime.Now));
+                                        Program.TerminalQueues[_gateId].Enqueue(baggage);
                                         Monitor.PulseAll(Program.TerminalQueues[_gateId]);
                                     }
                                     Monitor.Exit(Program.TerminalQueues[_gateId]);

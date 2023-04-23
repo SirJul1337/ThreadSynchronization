@@ -33,7 +33,10 @@ namespace BagageSorteringsSystem
                         if (Program.CustomerLine.Count < 100)
                         {
                             Random r = new Random();
-                            Program.CustomerLine.Enqueue(new Baggage("Test", r.Next(1, 3)));
+                            Baggage baggage = new Baggage("Test", r.Next(1, 3));
+                            baggage.Log.Add(String.Format("{0} | Baggage auto generated", DateTime.Now));
+                            Program.CustomerLine.Enqueue(baggage);
+                            
                             Monitor.PulseAll(Program.CustomerLine);
                         }
                         Monitor.Exit(Program.CustomerLine);

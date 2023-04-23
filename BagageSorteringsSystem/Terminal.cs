@@ -35,7 +35,9 @@ namespace BagageSorteringsSystem
                             {
                                 Monitor.Wait(Program.TerminalQueues[GateId]);
                             }
-                            Program.Planes[GateId].Baggages.Enqueue(Program.TerminalQueues[GateId].Dequeue());
+                            Baggage baggage = Program.TerminalQueues[GateId].Dequeue();
+                            baggage.Log.Add(String.Format("{0} | Baggage send to plane from gate {1}", DateTime.Now, GateId));
+                            Program.Planes[GateId].Baggages.Enqueue(baggage);
                             Monitor.Exit(Program.Planes[GateId].Baggages);
 
                         }
@@ -47,7 +49,9 @@ namespace BagageSorteringsSystem
                         {
                             while (Program.TerminalQueues[GateId].Count != 0)
                             {
-                                Program.LostBaggage.Enqueue(Program.TerminalQueues[GateId].Dequeue());
+                                Baggage baggage = Program.TerminalQueues[GateId].Dequeue();
+                                baggage.Log.Add(String.Format("{0} | Baggage send to lost baggage from gate {1}", DateTime.Now, GateId));
+                                Program.LostBaggage.Enqueue(baggage);
 
                             }
                             Monitor.Exit(Program.LostBaggage);
