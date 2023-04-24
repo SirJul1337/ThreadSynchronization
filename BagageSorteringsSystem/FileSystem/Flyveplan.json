@@ -2,25 +2,25 @@
   "Flyveplan": [
     {
       "GateId": 1,
-      "Afgangstid": "2023-04-24T09:15:00",
+      "Afgangstid": "2023-04-26T09:15:00",
       "Destination": "New York",
       "MaxCustomers": 50
     },
     {
       "GateId": 2,
-      "Afgangstid": "2023-04-24T10:30:00",
+      "Afgangstid": "2023-04-26T10:30:00",
       "Destination": "Alabama",
       "MaxCustomers": 20
     },
     {
       "GateId": 2,
-      "Afgangstid": "2023-04-24T10:30:00",
+      "Afgangstid": "2023-04-26T10:30:00",
       "Destination": "Ohio",
       "MaxCustomers": 20
     },
     {
       "GateId": 1,
-      "Afgangstid": "2023-04-24T10:30:00",
+      "Afgangstid": "2023-04-26T10:30:00",
       "Destination": "Copenhagen",
       "MaxCustomers": 20
     }

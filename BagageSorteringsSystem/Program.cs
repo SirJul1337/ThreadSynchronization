@@ -3,18 +3,19 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Core;
+using System.Collections.Concurrent;
 using System.Reflection;
 namespace BagageSorteringsSystem;
 
 public class Program
 {
-    public static Queue<Baggage> Baggages = new();
-    public static Dictionary<int, Queue<Baggage>> TerminalQueues = new();
+    public static BlockingCollection<Baggage> Baggages = new();
+    public static Dictionary<int, BlockingCollection<Baggage>> TerminalQueues = new();
     public static Dictionary<int, Plane> Planes = new();
     public static Dictionary<int, Terminal> Terminals = new();
     public static CheckIn[] CheckIns = new CheckIn[3] { new CheckIn(), new CheckIn(), new CheckIn() };
-    public static Queue<Baggage> CustomerLine = new();
-    public static Queue<Baggage> LostBaggage = new();
+    public static BlockingCollection<Baggage> CustomerLine = new();
+    public static BlockingCollection<Baggage> LostBaggage = new();
     public static Logger Logger;
     public static Dictionary<ConsoleKey, Action> NavDictionary = new();
     public static ConsoleKey NavKey = ConsoleKey.A;

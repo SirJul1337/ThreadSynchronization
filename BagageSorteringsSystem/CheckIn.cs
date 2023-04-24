@@ -30,24 +30,14 @@ namespace BagageSorteringsSystem
                 try
                 {
 
-                    if (Monitor.TryEnter(Program.CustomerLine))
+                    while (Program.CustomerLine.Count == 0 || Program.Baggages.Count >= 50)
                     {
-                        if (Monitor.TryEnter(Program.Baggages))
-                        {
-                            if (Program.CustomerLine.Count == 0)
-                            {
-                                Monitor.Wait(Program.CustomerLine);
-                            }
-                            if(Program.Baggages.Count < 50)
-                            {
-                                Program.Baggages.Enqueue(Program.CustomerLine.Dequeue());
-                                Monitor.PulseAll(Program.Baggages);
 
-                            }
-                            Monitor.Exit(Program.Baggages);
-                        }
-                        Monitor.Exit(Program.CustomerLine);
                     }
+
+                    Baggage baggage = Program.CustomerLine.Take();
+                    Program.Baggages.Add(baggage);
+
 
                 }
                 finally

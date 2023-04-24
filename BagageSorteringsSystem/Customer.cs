@@ -10,7 +10,7 @@ namespace BagageSorteringsSystem
     {
         public Customer()
         {
-            
+
         }
 
         public void LoadFromFile()
@@ -27,19 +27,12 @@ namespace BagageSorteringsSystem
             {
                 try
                 {
-
-                    if (Monitor.TryEnter(Program.CustomerLine))
+                    if (Program.CustomerLine.Count < 100)
                     {
-                        if (Program.CustomerLine.Count < 100)
-                        {
-                            Random r = new Random();
-                            Baggage baggage = new Baggage("Test", r.Next(1, 3));
-                            baggage.Log.Add(String.Format("{0} | Baggage auto generated", DateTime.Now));
-                            Program.CustomerLine.Enqueue(baggage);
-                            
-                            Monitor.PulseAll(Program.CustomerLine);
-                        }
-                        Monitor.Exit(Program.CustomerLine);
+                        Random r = new Random();
+                        Baggage baggage = new Baggage("Test", r.Next(1, 3));
+                        baggage.Log.Add(String.Format("{0} | Baggage auto generated", DateTime.Now));
+                        Program.CustomerLine.Add(baggage);
                     }
                 }
                 finally

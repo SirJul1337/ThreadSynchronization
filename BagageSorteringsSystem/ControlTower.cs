@@ -23,7 +23,7 @@ namespace BagageSorteringsSystem
             {
                 Program.Terminals.Add(list[i].GateId, list[i]);
                 Program.Logger.Information("Terminal created Gate {0}", list[i].GateId);
-                Program.TerminalQueues.Add(list[i].GateId, new Queue<Baggage>());
+                Program.TerminalQueues.Add(list[i].GateId, new System.Collections.Concurrent.BlockingCollection<Baggage>());
                 Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.Flyveplan[i].GateId);
                 ThreadPool.QueueUserWorkItem(Program.Terminals[list[i].GateId].ConsumeBaggage);
                 Program.Logger.Information("Terminal on Gate {0} start consuming", list[i].GateId);
