@@ -34,21 +34,14 @@ namespace BagageSorteringsSystem
 
                 foreach (Terminal terminal in Program.Terminals.Values)
                 {
-                    if (Monitor.TryEnter(terminal))
-                    {
-                        if (Monitor.TryEnter(Program.FlyingPlan.Flyveplan))
-                        {
-                            var plan = Program.FlyingPlan.Flyveplan.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
-                            if(plan != null)
-                            {
-                                if (!Program.Planes.ContainsKey(plan.GateId))
-                                {
-                                    Program.Planes.Add(plan.GateId,  new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
-                                    ThreadPool.QueueUserWorkItem(Program.Planes[plan.GateId].Dock);
-                                }
-                            }
-                            Monitor.Exit(terminal);
 
+                    var plan = Program.FlyingPlan.Flyveplan.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
+                    if (plan != null)
+                    {
+                        if (!Program.Planes.ContainsKey(plan.GateId))
+                        {
+                            Program.Planes.Add(plan.GateId, new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
+                            ThreadPool.QueueUserWorkItem(Program.Planes[plan.GateId].Dock);
                         }
                     }
                 }
@@ -61,7 +54,7 @@ namespace BagageSorteringsSystem
         /// <returns></returns>
         private static string ReadFile(string filePath)
         {
-            
+
             string file = File.ReadAllText(filePath);
             return file;
         }

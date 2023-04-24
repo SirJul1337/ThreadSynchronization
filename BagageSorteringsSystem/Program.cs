@@ -33,6 +33,9 @@ public class Program
         while (true)
         {
             Console.Clear();
+            Console.WriteLine("----------------------------------------------");
+            Console.WriteLine("             {0}                          ", DateTime.Now);
+            Console.WriteLine("----------------------------------------------");
             if (NavDictionary.ContainsKey(NavKey))
             {
                 NavDictionary[NavKey].Invoke(); //TODO: fix problem with checkin Add and remove
@@ -65,52 +68,42 @@ public class Program
 
 
 
-        Console.WriteLine("----------------------------------------------");
-        Console.WriteLine("             {0}                          ", DateTime.Now);
-        Console.WriteLine("----------------------------------------------");
-        if (Monitor.TryEnter(CustomerLine))
-        {
-            Console.WriteLine("Customers in queue: {0}", CustomerLine.Count);
-            Monitor.Exit(CustomerLine);
 
-        }
+
+        Console.WriteLine("Customers in queue: {0}", CustomerLine.Count);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine("Baggages in sorting system: {0}", Baggages.Count);
-        if (Monitor.TryEnter(TerminalQueues))
-        {
-            for (int i = 0; i < TerminalQueues.Count; i++)
-            {
+        Console.WriteLine("----------------------------------------------");
 
-            }
-            foreach (var item in TerminalQueues)
+        for (int i = 0; i < TerminalQueues.Count; i++)
+        {
+
+        }
+        foreach (var item in TerminalQueues)
+        {
+            int id = item.Key;
+            Console.WriteLine("Terminal {0} BaggageCount: {1}", id, TerminalQueues[id].Count);
+            if (Planes.ContainsKey(id))
             {
-                int id = item.Key;
-                Console.WriteLine("----------------------------------------------");
-                Console.WriteLine("Terminal {0} BaggageCount: {1}", id, TerminalQueues[id].Count);
-                if (Planes.ContainsKey(id))
-                {
-                    Console.WriteLine("Distination {0}", Planes[id].Destination);
-                    Console.WriteLine("Takeoff: {0}", Planes[id].Time);
-                    Console.WriteLine("Plane {0} baggage onboard: {1}/{2}", id, Planes[id].Baggages.Count, Planes[id].MaxCount);
-                    //Monitor.Exit(Planes[id].Baggages);
-                }
+                Console.WriteLine("Distination {0}", Planes[id].Destination);
+                Console.WriteLine("Takeoff: {0}", Planes[id].Time);
+                Console.WriteLine("Plane {0} baggage onboard: {1}/{2}", id, Planes[id].Baggages.Count, Planes[id].MaxCount);
             }
-            Monitor.Exit(TerminalQueues);
+
             Console.WriteLine("----------------------------------------------");
         }
     }
     private static void ViewFlyPlan()
     {
-        if (Monitor.TryEnter(FlyingPlan.Flyveplan))
-        {
-            for (int i = 0; i < FlyingPlan.Flyveplan.Count; i++)
-            {
-                Console.WriteLine("Gate {0} | Destination {1} | Time {2}", FlyingPlan.Flyveplan[i].GateId, FlyingPlan.Flyveplan[i].Destination, FlyingPlan.Flyveplan[i].Afgangstid);
-                Console.WriteLine("---------------------------------------------------------------------------");
 
-            }
+        for (int i = 0; i < FlyingPlan.Flyveplan.Count; i++)
+        {
+            Console.WriteLine("Gate {0} | Destination {1} | Time {2}", FlyingPlan.Flyveplan[i].GateId, FlyingPlan.Flyveplan[i].Destination, FlyingPlan.Flyveplan[i].Afgangstid);
+            Console.WriteLine("---------------------------------------------------------------------------");
 
         }
+
+
     }
     private static void CheckInOverview()
     {

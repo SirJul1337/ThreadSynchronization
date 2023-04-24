@@ -35,8 +35,6 @@ namespace BagageSorteringsSystem
         /// <param name="callback"></param>
         public void Dock(object callback)
         {
-
-            Monitor.Enter(Program.Terminals[Id]);
             Program.Terminals[Id].PlaneDocked = true;
             Program.Logger.Information("Plane {0} Docked to gate");
             while (!_takeOff)
@@ -50,8 +48,7 @@ namespace BagageSorteringsSystem
                     Thread.Sleep(1500);
                 }
             }
-            Monitor.Pulse(Program.Terminals[Id]);
-            Monitor.Exit(Program.Terminals[Id]);
+
         }
         /// <summary>
         /// Fly method will change variables, to close the while loop, and remove the plan from the flyingplan list
@@ -60,9 +57,9 @@ namespace BagageSorteringsSystem
         {
             Program.Logger.Information("Plane {0} takes off", Id);
             _takeOff = true;
+            Program.FlyingPlan.Flyveplan.Remove(Program.FlyingPlan.Flyveplan.Where(f => f.GateId == Id).FirstOrDefault());
             Program.Terminals[Id].PlaneDocked = false;
             Program.Planes.Remove(Id);
-            Program.FlyingPlan.Flyveplan.Remove(Program.FlyingPlan.Flyveplan.Where(f => f.GateId == Id).FirstOrDefault());
         }
     }
 }
