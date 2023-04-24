@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -17,14 +18,14 @@ namespace BagageSorteringsSystem
         public async void ControlGates(object callback)
         {
 
-            Program.FlyingPlan = ConvertFileToFlyingPlan(ReadFile(@"../../../FileSystem/Flyveplan.json"));
-            List<Terminal> list = ConvertFileToTerminal(ReadFile(@"../../../FileSystem/Terminals.json"));
+            Program.FlyingPlan = ConvertStringToFlyingPlan(ReadFile(@"../../../FileSystem/Flyveplan.json"));
+            List<Terminal> list = ConvertStringToTerminal(ReadFile(@"../../../FileSystem/Terminals.json"));
             for (int i = 0; i < list.Count; i++)
             {
                 Program.Terminals.Add(list[i].GateId, list[i]);
                 Program.Logger.Information("Terminal created Gate {0}", list[i].GateId);
-                Program.TerminalQueues.Add(list[i].GateId, new System.Collections.Concurrent.BlockingCollection<Baggage>());
-                Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.Flyveplan[i].GateId);
+                Program.TerminalQueues.Add(list[i].GateId, new BlockingCollection<Baggage>());
+                Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.FlyvePlaner[i].GateId);
                 ThreadPool.QueueUserWorkItem(Program.Terminals[list[i].GateId].ConsumeBaggage);
                 Program.Logger.Information("Terminal on Gate {0} start consuming", list[i].GateId);
             }
@@ -35,7 +36,7 @@ namespace BagageSorteringsSystem
                 foreach (Terminal terminal in Program.Terminals.Values)
                 {
 
-                    var plan = Program.FlyingPlan.Flyveplan.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
+                    var plan = Program.FlyingPlan.FlyvePlaner.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
                     if (plan != null)
                     {
                         if (!Program.Planes.ContainsKey(plan.GateId))
@@ -63,7 +64,7 @@ namespace BagageSorteringsSystem
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private static FlyingPlan ConvertFileToFlyingPlan(string input)
+        private static FlyingPlan ConvertStringToFlyingPlan(string input)
         {
             FlyingPlan plan = JsonConvert.DeserializeObject<FlyingPlan>(input);
             return plan;
@@ -73,7 +74,7 @@ namespace BagageSorteringsSystem
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private static List<Terminal> ConvertFileToTerminal(string input)
+        private static List<Terminal> ConvertStringToTerminal(string input)
         {
             List<Terminal> plan = JsonConvert.DeserializeObject<List<Terminal>>(input);
             return plan;

@@ -8,15 +8,6 @@ namespace BagageSorteringsSystem
 {
     public class Customer
     {
-        public Customer()
-        {
-
-        }
-
-        public void LoadFromFile()
-        {
-
-        }
         /// <summary>
         /// Customer that just keep generating Customer baggeges
         /// </summary>

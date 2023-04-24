@@ -10,26 +10,21 @@ namespace BagageSorteringsSystem;
 public class Program
 {
     public static BlockingCollection<Baggage> Baggages = new();
+    public static BlockingCollection<Baggage> CustomerLine = new();
+    public static BlockingCollection<Baggage> LostBaggage = new();
     public static Dictionary<int, BlockingCollection<Baggage>> TerminalQueues = new();
     public static Dictionary<int, Plane> Planes = new();
     public static Dictionary<int, Terminal> Terminals = new();
-    public static CheckIn[] CheckIns = new CheckIn[3] { new CheckIn(), new CheckIn(), new CheckIn() };
-    public static BlockingCollection<Baggage> CustomerLine = new();
-    public static BlockingCollection<Baggage> LostBaggage = new();
-    public static Logger Logger;
     public static Dictionary<ConsoleKey, Action> NavDictionary = new();
-    public static ConsoleKey NavKey = ConsoleKey.A;
+    public static CheckIn[] CheckIns = new CheckIn[3] { new CheckIn(), new CheckIn(), new CheckIn() };
+    public static Logger Logger;
     public static FlyingPlan FlyingPlan;
+    public static ConsoleKey NavKey = ConsoleKey.A;
     public static void Main()
     {
         Startup();
-        CheckInManager checkInManager = new();
-        checkInManager.Add();
-        NavDictionary.Add(ConsoleKey.A, QueueOverview);
-        NavDictionary.Add(ConsoleKey.B, ViewFlyPlan);
-        NavDictionary.Add(ConsoleKey.C, CheckInOverview);
-        NavDictionary.Add(ConsoleKey.P, checkInManager.Add);
-        NavDictionary.Add(ConsoleKey.M, checkInManager.Remove);
+
+
         while (true)
         {
             Console.Clear();
@@ -52,7 +47,9 @@ public class Program
         Logger = new LoggerConfiguration()
         .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
         .CreateLogger();
-
+        CheckInManager checkInManager = new();
+        checkInManager.Add();
+        PopulateNavDirectory(checkInManager);
         Customer customer = new();
         BaggageHandling handling = new();
         ControlTower controlTower = new();
@@ -63,13 +60,16 @@ public class Program
         ThreadPool.QueueUserWorkItem(customer.AutoGenerate);
         ThreadPool.QueueUserWorkItem(handling.Sorting);
     }
-    private static void QueueOverview()
+    private static void PopulateNavDirectory(CheckInManager checkInManager)
     {
-
-
-
-
-
+        NavDictionary.Add(ConsoleKey.A, ViewOverview);
+        NavDictionary.Add(ConsoleKey.B, ViewFlyPlan);
+        NavDictionary.Add(ConsoleKey.C, ViewCheckIns);
+        NavDictionary.Add(ConsoleKey.P, checkInManager.Add);
+        NavDictionary.Add(ConsoleKey.M, checkInManager.Remove);
+    }
+    private static void ViewOverview()
+    {
         Console.WriteLine("Customers in queue: {0}", CustomerLine.Count);
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine("Baggages in sorting system: {0}", Baggages.Count);
@@ -96,16 +96,16 @@ public class Program
     private static void ViewFlyPlan()
     {
 
-        for (int i = 0; i < FlyingPlan.Flyveplan.Count; i++)
+        for (int i = 0; i < FlyingPlan.FlyvePlaner.Count; i++)
         {
-            Console.WriteLine("Gate {0} | Destination {1} | Time {2}", FlyingPlan.Flyveplan[i].GateId, FlyingPlan.Flyveplan[i].Destination, FlyingPlan.Flyveplan[i].Afgangstid);
+            Console.WriteLine("Gate {0} | Destination {1} | Time {2}", FlyingPlan.FlyvePlaner[i].GateId, FlyingPlan.FlyvePlaner[i].Destination, FlyingPlan.FlyvePlaner[i].Afgangstid);
             Console.WriteLine("---------------------------------------------------------------------------");
 
         }
 
 
     }
-    private static void CheckInOverview()
+    private static void ViewCheckIns()
     {
         var openList = CheckIns.Where(c => c.Alive == true).ToList();
         for (int i = 0; i < openList.Count; i++)

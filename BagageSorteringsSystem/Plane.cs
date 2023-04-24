@@ -15,7 +15,7 @@ namespace BagageSorteringsSystem
         public int MaxCount;
         public Queue<Baggage> Baggages = new Queue<Baggage>();
         /// <summary>
-        /// Constructor to set id Maxcound Destination and time
+        /// Constructor used to construct Plane with all neccesary variables
         /// </summary>
         /// <param name="id"></param>
         /// <param name="maxCount"></param>
@@ -53,11 +53,11 @@ namespace BagageSorteringsSystem
         /// <summary>
         /// Fly method will change variables, to close the while loop, and remove the plan from the flyingplan list
         /// </summary>
-        public void Fly()
+        private void Fly()
         {
             Program.Logger.Information("Plane {0} takes off", Id);
             _takeOff = true;
-            Program.FlyingPlan.Flyveplan.Remove(Program.FlyingPlan.Flyveplan.Where(f => f.GateId == Id).FirstOrDefault());
+            Program.FlyingPlan.FlyvePlaner.Remove(Program.FlyingPlan.FlyvePlaner.Where(f => f.GateId == Id).FirstOrDefault());
             Program.Terminals[Id].PlaneDocked = false;
             Program.Planes.Remove(Id);
         }

@@ -9,7 +9,7 @@ namespace BagageSorteringsSystem;
 public partial class FlyingPlan
 {
     [JsonProperty("Flyveplan")]
-    public List<Flyveplan> Flyveplan { get; set; }
+    public List<Flyveplan> FlyvePlaner { get; set; }
 }
 
 /// <summary>

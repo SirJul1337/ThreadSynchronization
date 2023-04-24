@@ -13,10 +13,6 @@ namespace BagageSorteringsSystem
     {
         private bool _abort;
         public bool Alive;
-        public CheckIn()
-        {
-
-        }
         /// <summary>
         /// When checkin box is open it will consume from customer line, and put bagges into sortingSystem baggges queue if there is space
         /// </summary>
