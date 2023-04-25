@@ -8,9 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Funnel.svg" />
+    <None Remove="Images\Funnel.svg" />
+    <None Remove="Images\Untitled.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Funnel.svg" />
+    <Resource Include="Images\Funnel.svg" />
+    <Resource Include="Images\Untitled.png" />
   </ItemGroup>
 
 </Project>

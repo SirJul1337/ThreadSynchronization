@@ -6,55 +6,55 @@ using System.Threading.Tasks;
 
 namespace FlaskeAutomaten
 {
-    public class Splitter
+    public class Splitter : IDisposable
     {
         /// <summary>
         /// This method will measure on the bottle object property name, and split to the specific Cola or Beerbelt.¨
         /// It will wait if there is not bottles on the belt
         /// </summary>
-        /// <param name="callback"></param>
-        public void SplitBottles(object callback)
+        /// <param name="obj"></param>
+        public void SplitBottles(object obj)
         {
-            while (true)
+            CancellationToken cancellationToken = ((CancellationTokenSource)obj).Token;
+            while (!cancellationToken.IsCancellationRequested)
             {
-
-                if (Monitor.TryEnter(Program.BottleBelt))
+                try
                 {
-                    if (Program.BottleBelt.Count == 0)
-                    {
-                        Monitor.Wait(Program.BottleBelt);
-                    }
-                    switch (Program.BottleBelt.Peek().Name)
+                    Bottle bottle = Program.BottleBelt.Take();
+                    switch (bottle.Name)
                     {
                         case "Cola":
-                            if (Monitor.TryEnter(Program.ColaBelt))
+                            while (Program.ColaBelt.Count >= 10)
                             {
-                                if(Program.ColaBelt.Count < 10)
-                                {
-                                    Program.ColaBelt.Enqueue((ColaBottle)Program.BottleBelt.Dequeue());
-                                    Monitor.PulseAll(Program.ColaBelt);
-                                }
-                                Monitor.Exit(Program.ColaBelt);
+
                             }
+                            Program.ColaBelt.Add((ColaBottle)bottle);
+                            Program.Logger.Information("Bottle send to Cola buffer");
                             break;
                         case "Beer":
-                            if (Monitor.TryEnter(Program.BeerBelt))
+
+                            while (Program.BeerBelt.Count >= 10)
                             {
-                                if(Program.BeerBelt.Count < 10)
-                                {
-                                    Program.BeerBelt.Enqueue((BeerBottle)Program.BottleBelt.Dequeue());
-                                    Monitor.PulseAll(Program.BeerBelt);
-                                }
-                                Monitor.Exit(Program.BeerBelt);
+                                
                             }
+                            Program.BeerBelt.Add((BeerBottle)bottle);
+                            Program.Logger.Information("Bottle send to Beer buffer");
+
                             break;
                         default:
                             break;
                     }
-                    Monitor.Exit(Program.BottleBelt);
+                }
+                finally
+                {
                     Thread.Sleep(200);
                 }
+
             }
+        }
+        public void Dispose()
+        {
+
         }
     }
 }

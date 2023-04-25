@@ -19,46 +19,25 @@ namespace BagageSorteringsSystem
                 try
                 {
 
-                    if (Monitor.TryEnter(Program.Baggages))
+                    Baggage baggage = Program.Baggages.Take();
+                    //Baggage baggage1 = Program.Baggages.Take();
+                    int _gateId = baggage.GateId;
+
+
+                    if (Program.TerminalQueues.ContainsKey(_gateId))
                     {
-                        if (Program.Baggages.Count == 0)
+                        if (Program.TerminalQueues[_gateId].GetConsumingEnumerable().Count() >= 30)
                         {
-                            Monitor.Wait(Program.Baggages);
+                            baggage.Log.Add(String.Format("{0} | Arrived in sortingsystem", DateTime.Now));
+                            Program.TerminalQueues[_gateId].Add(baggage);
                         }
-                        int _gateId = Program.Baggages.Peek().GateId;
-                        if (Monitor.TryEnter(Program.TerminalQueues))
-                        {
-
-                            if (Program.TerminalQueues.ContainsKey(_gateId))
-                            {
-                                if (Monitor.TryEnter(Program.TerminalQueues[_gateId]))
-                                {
-
-                                    if (Program.TerminalQueues[_gateId].Count() < 30)
-                                    {
-                                        Baggage baggage = Program.Baggages.Dequeue();
-                                        baggage.Log.Add(String.Format("{0} | Arrived in sortingsystem", DateTime.Now));
-                                        Program.TerminalQueues[_gateId].Enqueue(baggage);
-                                        Monitor.PulseAll(Program.TerminalQueues[_gateId]);
-                                    }
-                                    Monitor.Exit(Program.TerminalQueues[_gateId]);
-                                }
-
-                            }
-                            else
-                            {
-                                if (Monitor.TryEnter(Program.LostBaggage))
-                                {
-                                    Program.LostBaggage.Enqueue(Program.Baggages.Dequeue());
-                                    Monitor.Exit(Program.LostBaggage);
-                                    
-                                }
-                            }
-                            Monitor.Exit(Program.TerminalQueues);
-                        }
-                        Monitor.Exit(Program.Baggages);
-
                     }
+                    else
+                    {
+
+                        Program.LostBaggage.Add(baggage);
+                    }
+
                 }
                 finally
                 {
@@ -66,9 +45,6 @@ namespace BagageSorteringsSystem
                 }
             }
         }
-        public void LostBaggage()
-        {
 
-        }
     }
 }

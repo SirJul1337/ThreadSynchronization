@@ -14,25 +14,21 @@ namespace FlaskeAutomaten
         /// GetBottle is implemented by the interface IConsumer
         /// </summary>
         /// <param name="callback"></param>
-        public void GetBottle(object callback)
+        public void GetBottle(object obj)
         {
+            //CancellationToken cancellationToken = (CancellationToken)obj;
             while (true)
             {
                 try
                 {
-                    if (Monitor.TryEnter(Program.ColaBelt))
+                    if (Program.ColaBelt.Count == 0)
                     {
-                        if (Program.ColaBelt.Count == 0)
-                        {
-                            Monitor.Wait(Program.ColaBelt);
-                        }
-                        if (Monitor.TryEnter(Program.ConsumedColaBottles))
-                        {
-                            Program.ConsumedColaBottles.Add(Program.ColaBelt.Dequeue());
-                            Monitor.Exit(Program.ConsumedColaBottles);
-                        }
-                        Monitor.Exit(Program.ColaBelt);
-
+                        Program.Logger.Information("ColaBelt is waiting");
+                    }
+                    if (Monitor.TryEnter(Program.ConsumedColaBottles))
+                    {
+                        Program.Logger.Information("Cola added to ConsumedColaBottles");
+                        Program.ConsumedColaBottles.Add(Program.ColaBelt.Take());
                     }
                 }
                 finally

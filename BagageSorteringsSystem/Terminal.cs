@@ -17,52 +17,48 @@ namespace BagageSorteringsSystem
 
         public bool PlaneDocked = false;
         /// <summary>
-        /// Consumes baggeges from assigned gate id, and if no plane is docked, it will put baggs in lost baggage
+        /// Consumes baggages from assigned gate id, and if no plane is docked, it will put baggs in lost baggage
         /// </summary>
         /// <param name="callback"></param>
         public void ConsumeBaggage(object callback)
         {
             while (true)
             {
-                if (Program.TerminalQueues.ContainsKey(GateId) && Monitor.TryEnter(Program.TerminalQueues[GateId]))
+                if (Program.TerminalQueues.ContainsKey(GateId))
                 {
+                    Baggage baggage = Program.TerminalQueues[GateId].Take();
                     if (Program.Planes.ContainsKey(GateId) && PlaneDocked)
                     {
+                        SendToPlaneBaggage(baggage);
+                        Thread.Sleep(1500);
 
-                        if (Monitor.TryEnter(Program.Planes[GateId].Baggages))
-                        {
-                            if (Program.TerminalQueues[GateId].Count() == 0)
-                            {
-                                Monitor.Wait(Program.TerminalQueues[GateId]);
-                            }
-                            Baggage baggage = Program.TerminalQueues[GateId].Dequeue();
-                            baggage.Log.Add(String.Format("{0} | Baggage send to plane from gate {1}", DateTime.Now, GateId));
-                            Program.Planes[GateId].Baggages.Enqueue(baggage);
-                            Monitor.Exit(Program.Planes[GateId].Baggages);
-
-                        }
-                        
                     }
                     else
                     {
-                        if(Monitor.TryEnter(Program.LostBaggage))
-                        {
-                            while (Program.TerminalQueues[GateId].Count != 0)
-                            {
-                                Baggage baggage = Program.TerminalQueues[GateId].Dequeue();
-                                baggage.Log.Add(String.Format("{0} | Baggage send to lost baggage from gate {1}", DateTime.Now, GateId));
-                                Program.LostBaggage.Enqueue(baggage);
-
-                            }
-                            Monitor.Exit(Program.LostBaggage);
-                            //Program.TerminalQueues.Remove(_terminalId);
-                        }
+                        SendToLostBaggage(baggage);
                     }
-                    Monitor.Exit(Program.TerminalQueues[GateId]);
+
                 }
-                Thread.Sleep(1500);
             }
-            
+        }
+        /// <summary>
+        /// Method to log on the baggage and send to the planes baggage
+        /// </summary>
+        /// <param name="baggage"></param>
+        private void SendToPlaneBaggage(Baggage baggage)
+        {
+            baggage.Log.Add(String.Format("{0} | Baggage send to plane from gate {1}", DateTime.Now, GateId));
+            Program.Planes[GateId].Baggages.Enqueue(baggage);
+        }
+        /// <summary>
+        /// Method to log on the baggage and send the baggage to the lostBaggage 
+        /// </summary>
+        /// <param name="baggage"></param>
+        private void SendToLostBaggage(Baggage baggage)
+        {
+            Program.LostBaggage.Add(baggage);
+            baggage.Log.Add(String.Format("{0} | Baggage send to lost baggage from gate {1}", DateTime.Now, GateId));
         }
     }
+
 }

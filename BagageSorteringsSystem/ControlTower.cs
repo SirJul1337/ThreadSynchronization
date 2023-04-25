@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -17,16 +18,16 @@ namespace BagageSorteringsSystem
         public async void ControlGates(object callback)
         {
 
-            Program.FlyingPlan = ConvertFileToFlyingPlan(ReadFile(@"../../../FileSystem/Flyveplan.json"));
-            List<Terminal> list = ConvertFileToTerminal(ReadFile(@"../../../FileSystem/Terminals.json"));
-            for (int i = 0; i < list.Count; i++)
+            Program.FlyingPlan = ConvertStringToFlyingPlan(ReadFile(@"../../../FileSystem/Flyveplan.json"));
+            List<Terminal> terminalList = ConvertStringToTerminal(ReadFile(@"../../../FileSystem/Terminals.json"));
+            for (int i = 0; i < terminalList.Count; i++)
             {
-                Program.Terminals.Add(list[i].GateId, list[i]);
-                Program.Logger.Information("Terminal created Gate {0}", list[i].GateId);
-                Program.TerminalQueues.Add(list[i].GateId, new Queue<Baggage>());
-                Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.Flyveplan[i].GateId);
-                ThreadPool.QueueUserWorkItem(Program.Terminals[list[i].GateId].ConsumeBaggage);
-                Program.Logger.Information("Terminal on Gate {0} start consuming", list[i].GateId);
+                Program.Terminals.Add(terminalList[i].GateId, terminalList[i]);
+                Program.Logger.Information("Terminal created Gate {0}", terminalList[i].GateId);
+                Program.TerminalQueues.Add(terminalList[i].GateId, new BlockingCollection<Baggage>());
+                Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.FlyvePlaner[i].GateId);
+                ThreadPool.QueueUserWorkItem(Program.Terminals[terminalList[i].GateId].ConsumeBaggage);
+                Program.Logger.Information("Terminal on Gate {0} start consuming", terminalList[i].GateId);
             }
 
             while (true)
@@ -34,22 +35,19 @@ namespace BagageSorteringsSystem
 
                 foreach (Terminal terminal in Program.Terminals.Values)
                 {
-                    if (Monitor.TryEnter(terminal))
-                    {
-                        if (Monitor.TryEnter(Program.FlyingPlan.Flyveplan))
-                        {
-                            var plan = Program.FlyingPlan.Flyveplan.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
-                            if(plan != null)
-                            {
-                                if (!Program.Planes.ContainsKey(plan.GateId))
-                                {
-                                    Program.Planes.Add(plan.GateId,  new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
-                                    ThreadPool.QueueUserWorkItem(Program.Planes[plan.GateId].Dock);
-                                }
-                            }
-                            Monitor.Exit(terminal);
 
+                    if (Monitor.TryEnter(Program.FlyingPlan.FlyvePlaner))
+                    {
+                        var plan = Program.FlyingPlan.FlyvePlaner.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
+                        if (plan != null)
+                        {
+                            if (!Program.Planes.ContainsKey(plan.GateId))
+                            {
+                                Program.Planes.Add(plan.GateId, new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
+                                ThreadPool.QueueUserWorkItem(Program.Planes[plan.GateId].Dock);
+                            }
                         }
+                        Monitor.Exit(Program.FlyingPlan.FlyvePlaner);
                     }
                 }
             }
@@ -61,7 +59,7 @@ namespace BagageSorteringsSystem
         /// <returns></returns>
         private static string ReadFile(string filePath)
         {
-            
+
             string file = File.ReadAllText(filePath);
             return file;
         }
@@ -70,7 +68,7 @@ namespace BagageSorteringsSystem
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private static FlyingPlan ConvertFileToFlyingPlan(string input)
+        private static FlyingPlan ConvertStringToFlyingPlan(string input)
         {
             FlyingPlan plan = JsonConvert.DeserializeObject<FlyingPlan>(input);
             return plan;
@@ -80,7 +78,7 @@ namespace BagageSorteringsSystem
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        private static List<Terminal> ConvertFileToTerminal(string input)
+        private static List<Terminal> ConvertStringToTerminal(string input)
         {
             List<Terminal> plan = JsonConvert.DeserializeObject<List<Terminal>>(input);
             return plan;

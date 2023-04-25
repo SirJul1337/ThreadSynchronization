@@ -13,42 +13,24 @@ namespace BagageSorteringsSystem
     {
         private bool _abort;
         public bool Alive;
-        public CheckIn()
-        {
-
-        }
         /// <summary>
-        /// When checkin box is open it will consume from customer line, and put bagges into sortingSystem baggges queue if there is space
+        /// When checkin box is open it will check if there is space in sortingsystem and it will consume from customerline, and put it into system
         /// </summary>
         /// <param name="callback"></param>
-        public void Open(object callback)
+        public void Open(object obj)
         {
+            CancellationToken token = ((CancellationTokenSource)obj).Token;
             _abort = false;
             Alive = true;
             while (!_abort)
             {
                 try
                 {
-
-                    if (Monitor.TryEnter(Program.CustomerLine))
+                    if (Program.Baggages.Count < 50)
                     {
-                        if (Monitor.TryEnter(Program.Baggages))
-                        {
-                            if (Program.CustomerLine.Count == 0)
-                            {
-                                Monitor.Wait(Program.CustomerLine);
-                            }
-                            if(Program.Baggages.Count < 50)
-                            {
-                                Program.Baggages.Enqueue(Program.CustomerLine.Dequeue());
-                                Monitor.PulseAll(Program.Baggages);
-
-                            }
-                            Monitor.Exit(Program.Baggages);
-                        }
-                        Monitor.Exit(Program.CustomerLine);
+                        Baggage baggage = Program.CustomerLine.Take();
+                        Program.Baggages.Add(baggage);
                     }
-
                 }
                 finally
                 {
@@ -58,6 +40,7 @@ namespace BagageSorteringsSystem
         }
         /// <summary>
         /// Used for closing thread, cause thread.Abort is deprecated
+        /// TODO: CancelationToken
         /// </summary>
         /// <param name="callback"></param>
         public void Close(object callback)

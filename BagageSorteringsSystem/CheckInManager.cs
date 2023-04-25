@@ -8,15 +8,19 @@ namespace BagageSorteringsSystem
 {
     public class CheckInManager
     {
+        public static CheckIn[] CheckIns = new CheckIn[3] { new CheckIn(), new CheckIn(), new CheckIn() };
         private static int _checkInIndex = 0;
+        private static Dictionary<int, CancellationTokenSource> cancelationTokens = new Dictionary<int, CancellationTokenSource>();
         /// <summary>
         /// Used for adding more Checkin boxed
         /// </summary>
         public void Add()
         {
-            if (_checkInIndex <= Program.CheckIns.Length-1)
+            if (_checkInIndex <= CheckIns.Length-1)
             {
-                ThreadPool.QueueUserWorkItem(Program.CheckIns[_checkInIndex].Open);
+                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                cancelationTokens.Add(_checkInIndex, cancellationTokenSource);
+                ThreadPool.QueueUserWorkItem(CheckIns[_checkInIndex].Open,cancellationTokenSource );
                 _checkInIndex++;
             }
         }
@@ -27,7 +31,8 @@ namespace BagageSorteringsSystem
         {
             if(_checkInIndex >= 0)
             {
-                ThreadPool.QueueUserWorkItem(Program.CheckIns[_checkInIndex].Close); 
+                    //cancelationTokens[_checkInIndex].Cancel();
+                ThreadPool.QueueUserWorkItem(CheckIns[_checkInIndex].Close); 
                 if(_checkInIndex != 0)
                 {
                     _checkInIndex--;

@@ -15,7 +15,7 @@ namespace BagageSorteringsSystem
         public int MaxCount;
         public Queue<Baggage> Baggages = new Queue<Baggage>();
         /// <summary>
-        /// Constructor to set id Maxcound Destination and time
+        /// Constructor used to construct Plane with all neccesary variables
         /// </summary>
         /// <param name="id"></param>
         /// <param name="maxCount"></param>
@@ -30,13 +30,11 @@ namespace BagageSorteringsSystem
 
         }
         /// <summary>
-        /// Method to check how much baggage is filled up or it is time for flying, it will call Fly() method
+        /// Method to check how much baggage is filled up or if it is time for flying, it will call Fly() method
         /// </summary>
         /// <param name="callback"></param>
         public void Dock(object callback)
         {
-
-            Monitor.Enter(Program.Terminals[Id]);
             Program.Terminals[Id].PlaneDocked = true;
             Program.Logger.Information("Plane {0} Docked to gate");
             while (!_takeOff)
@@ -50,19 +48,20 @@ namespace BagageSorteringsSystem
                     Thread.Sleep(1500);
                 }
             }
-            Monitor.Pulse(Program.Terminals[Id]);
-            Monitor.Exit(Program.Terminals[Id]);
+
         }
         /// <summary>
         /// Fly method will change variables, to close the while loop, and remove the plan from the flyingplan list
         /// </summary>
-        public void Fly()
+        private void Fly()
         {
             Program.Logger.Information("Plane {0} takes off", Id);
             _takeOff = true;
+            Monitor.Enter(Program.FlyingPlan.FlyvePlaner);
+            Program.FlyingPlan.FlyvePlaner.Remove(Program.FlyingPlan.FlyvePlaner.Where(f => f.GateId == Id).FirstOrDefault());
+            Monitor.Exit(Program.FlyingPlan.FlyvePlaner);
             Program.Terminals[Id].PlaneDocked = false;
             Program.Planes.Remove(Id);
-            Program.FlyingPlan.Flyveplan.Remove(Program.FlyingPlan.Flyveplan.Where(f => f.GateId == Id).FirstOrDefault());
         }
     }
 }

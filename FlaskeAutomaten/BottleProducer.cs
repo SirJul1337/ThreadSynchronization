@@ -23,13 +23,16 @@ namespace FlaskeAutomaten
         /// Method has random int generated 0-1, in the switch case, it will generate Beer or cola depending on the number,
         /// after generation it will pulse all and exit the lock
         /// </summary>
-        /// <param name="callback"></param>
-        public void MakeBottle(object callback)
+        /// <param name="obj"></param>
+        public void MakeBottle(object obj)
         {
-            while (true)
+            CancellationToken cancellationToken = ((CancellationTokenSource)obj).Token;
+            while (!cancellationToken.IsCancellationRequested)
             {
-                if (Monitor.TryEnter(Program.BottleBelt))
+                try
                 {
+
+
                     if (Program.BottleBelt.Count < BottleMinimum)
                     {
                         Random rand = new Random();
@@ -38,18 +41,20 @@ namespace FlaskeAutomaten
                         {
                             case 0:
                                 ColaBottle cola = new ColaBottle();
-                                Program.BottleBelt.Enqueue(cola);
+                                Program.BottleBelt.Add(cola);
                                 break;
                             case 1:
                                 BeerBottle beer = new BeerBottle(5.4);
-                                Program.BottleBelt.Enqueue(beer);
+                                Program.BottleBelt.Add(beer);
                                 break;
                         }
-                        Monitor.PulseAll(Program.BottleBelt);
+                        Thread.Sleep(200);
                     }
-                    Monitor.Exit(Program.BottleBelt);
                 }
-                Thread.Sleep(200);
+                finally
+                {
+
+                }
 
             }
         }

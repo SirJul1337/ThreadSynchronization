@@ -9,7 +9,7 @@ namespace FlaskeAutomaten
     /// <summary>
     /// Interface with GetBottle 
     /// </summary>
-    public interface IConsumer
+    interface IConsumer
     {
         public void GetBottle(object callback);
     }
