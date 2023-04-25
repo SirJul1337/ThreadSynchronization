@@ -17,7 +17,7 @@ namespace BagageSorteringsSystem
 
         public bool PlaneDocked = false;
         /// <summary>
-        /// Consumes baggeges from assigned gate id, and if no plane is docked, it will put baggs in lost baggage
+        /// Consumes baggages from assigned gate id, and if no plane is docked, it will put baggs in lost baggage
         /// </summary>
         /// <param name="callback"></param>
         public void ConsumeBaggage(object callback)
@@ -41,11 +41,19 @@ namespace BagageSorteringsSystem
                 }
             }
         }
+        /// <summary>
+        /// Method to log on the baggage and send to the planes baggage
+        /// </summary>
+        /// <param name="baggage"></param>
         private void SendToPlaneBaggage(Baggage baggage)
         {
             baggage.Log.Add(String.Format("{0} | Baggage send to plane from gate {1}", DateTime.Now, GateId));
             Program.Planes[GateId].Baggages.Enqueue(baggage);
         }
+        /// <summary>
+        /// Method to log on the baggage and send the baggage to the lostBaggage 
+        /// </summary>
+        /// <param name="baggage"></param>
         private void SendToLostBaggage(Baggage baggage)
         {
             Program.LostBaggage.Add(baggage);

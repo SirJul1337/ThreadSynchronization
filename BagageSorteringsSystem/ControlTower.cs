@@ -19,15 +19,15 @@ namespace BagageSorteringsSystem
         {
 
             Program.FlyingPlan = ConvertStringToFlyingPlan(ReadFile(@"../../../FileSystem/Flyveplan.json"));
-            List<Terminal> list = ConvertStringToTerminal(ReadFile(@"../../../FileSystem/Terminals.json"));
-            for (int i = 0; i < list.Count; i++)
+            List<Terminal> terminalList = ConvertStringToTerminal(ReadFile(@"../../../FileSystem/Terminals.json"));
+            for (int i = 0; i < terminalList.Count; i++)
             {
-                Program.Terminals.Add(list[i].GateId, list[i]);
-                Program.Logger.Information("Terminal created Gate {0}", list[i].GateId);
-                Program.TerminalQueues.Add(list[i].GateId, new BlockingCollection<Baggage>());
+                Program.Terminals.Add(terminalList[i].GateId, terminalList[i]);
+                Program.Logger.Information("Terminal created Gate {0}", terminalList[i].GateId);
+                Program.TerminalQueues.Add(terminalList[i].GateId, new BlockingCollection<Baggage>());
                 Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.FlyvePlaner[i].GateId);
-                ThreadPool.QueueUserWorkItem(Program.Terminals[list[i].GateId].ConsumeBaggage);
-                Program.Logger.Information("Terminal on Gate {0} start consuming", list[i].GateId);
+                ThreadPool.QueueUserWorkItem(Program.Terminals[terminalList[i].GateId].ConsumeBaggage);
+                Program.Logger.Information("Terminal on Gate {0} start consuming", terminalList[i].GateId);
             }
 
             while (true)
@@ -36,14 +36,18 @@ namespace BagageSorteringsSystem
                 foreach (Terminal terminal in Program.Terminals.Values)
                 {
 
-                    var plan = Program.FlyingPlan.FlyvePlaner.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
-                    if (plan != null)
+                    if (Monitor.TryEnter(Program.FlyingPlan.FlyvePlaner))
                     {
-                        if (!Program.Planes.ContainsKey(plan.GateId))
+                        var plan = Program.FlyingPlan.FlyvePlaner.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
+                        if (plan != null)
                         {
-                            Program.Planes.Add(plan.GateId, new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
-                            ThreadPool.QueueUserWorkItem(Program.Planes[plan.GateId].Dock);
+                            if (!Program.Planes.ContainsKey(plan.GateId))
+                            {
+                                Program.Planes.Add(plan.GateId, new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
+                                ThreadPool.QueueUserWorkItem(Program.Planes[plan.GateId].Dock);
+                            }
                         }
+                        Monitor.Exit(Program.FlyingPlan.FlyvePlaner);
                     }
                 }
             }

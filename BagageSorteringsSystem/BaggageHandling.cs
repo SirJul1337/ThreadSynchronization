@@ -20,16 +20,17 @@ namespace BagageSorteringsSystem
                 {
 
                     Baggage baggage = Program.Baggages.Take();
+                    //Baggage baggage1 = Program.Baggages.Take();
                     int _gateId = baggage.GateId;
 
 
                     if (Program.TerminalQueues.ContainsKey(_gateId))
                     {
-                        while (Program.Baggages.Count == 0 || Program.TerminalQueues[_gateId].Count >= 30)
+                        if (Program.TerminalQueues[_gateId].GetConsumingEnumerable().Count() >= 30)
                         {
+                            baggage.Log.Add(String.Format("{0} | Arrived in sortingsystem", DateTime.Now));
+                            Program.TerminalQueues[_gateId].Add(baggage);
                         }
-                        baggage.Log.Add(String.Format("{0} | Arrived in sortingsystem", DateTime.Now));
-                        Program.TerminalQueues[_gateId].Add(baggage);
                     }
                     else
                     {

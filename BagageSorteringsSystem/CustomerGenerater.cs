@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BagageSorteringsSystem
 {
-    public class Customer
+    public class CustomerGenerater
     {
         /// <summary>
         /// Customer that just keep generating Customer baggeges

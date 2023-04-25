@@ -16,7 +16,7 @@ public class Program
     public static Dictionary<int, Plane> Planes = new();
     public static Dictionary<int, Terminal> Terminals = new();
     public static Dictionary<ConsoleKey, Action> NavDictionary = new();
-    public static CheckIn[] CheckIns = new CheckIn[3] { new CheckIn(), new CheckIn(), new CheckIn() };
+    
     public static Logger Logger;
     public static FlyingPlan FlyingPlan;
     public static ConsoleKey NavKey = ConsoleKey.A;
@@ -47,19 +47,23 @@ public class Program
         Logger = new LoggerConfiguration()
         .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
         .CreateLogger();
-        CheckInManager checkInManager = new();
-        checkInManager.Add();
-        PopulateNavDirectory(checkInManager);
-        Customer customer = new();
+        CustomerGenerater customer = new();
         BaggageHandling handling = new();
         ControlTower controlTower = new();
-        ThreadPool.QueueUserWorkItem(controlTower.ControlGates);
+        CheckInManager checkInManager = new();
         ConsoleNavigation navigation = new();
         Thread consoleNav = new(navigation.StartNavigations);
+        checkInManager.Add();
         consoleNav.Start();
+        PopulateNavDirectory(checkInManager);
+        ThreadPool.QueueUserWorkItem(controlTower.ControlGates);
         ThreadPool.QueueUserWorkItem(customer.AutoGenerate);
         ThreadPool.QueueUserWorkItem(handling.Sorting);
     }
+    /// <summary>
+    /// Method to populate my dictionary for my navigation
+    /// </summary>
+    /// <param name="checkInManager"></param>
     private static void PopulateNavDirectory(CheckInManager checkInManager)
     {
         NavDictionary.Add(ConsoleKey.A, ViewOverview);
@@ -68,6 +72,9 @@ public class Program
         NavDictionary.Add(ConsoleKey.P, checkInManager.Add);
         NavDictionary.Add(ConsoleKey.M, checkInManager.Remove);
     }
+    /// <summary>
+    /// Method to write out the dashboard to see informations of different Buffers and planes
+    /// </summary>
     private static void ViewOverview()
     {
         Console.WriteLine("Customers in queue: {0}", CustomerLine.Count);
@@ -93,6 +100,9 @@ public class Program
             Console.WriteLine("----------------------------------------------");
         }
     }
+    /// <summary>
+    /// Method to write in console the flying plan
+    /// </summary>
     private static void ViewFlyPlan()
     {
 
@@ -105,9 +115,12 @@ public class Program
 
 
     }
+    /// <summary>
+    /// Method to write in console to see all opened Checkins
+    /// </summary>
     private static void ViewCheckIns()
     {
-        var openList = CheckIns.Where(c => c.Alive == true).ToList();
+        var openList = CheckInManager.CheckIns.Where(c => c.Alive == true).ToList();
         for (int i = 0; i < openList.Count; i++)
         {
             Console.WriteLine("|----------------|");

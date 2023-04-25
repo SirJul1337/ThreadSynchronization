@@ -30,7 +30,7 @@ namespace BagageSorteringsSystem
 
         }
         /// <summary>
-        /// Method to check how much baggage is filled up or it is time for flying, it will call Fly() method
+        /// Method to check how much baggage is filled up or if it is time for flying, it will call Fly() method
         /// </summary>
         /// <param name="callback"></param>
         public void Dock(object callback)
@@ -57,7 +57,9 @@ namespace BagageSorteringsSystem
         {
             Program.Logger.Information("Plane {0} takes off", Id);
             _takeOff = true;
+            Monitor.Enter(Program.FlyingPlan.FlyvePlaner);
             Program.FlyingPlan.FlyvePlaner.Remove(Program.FlyingPlan.FlyvePlaner.Where(f => f.GateId == Id).FirstOrDefault());
+            Monitor.Exit(Program.FlyingPlan.FlyvePlaner);
             Program.Terminals[Id].PlaneDocked = false;
             Program.Planes.Remove(Id);
         }
