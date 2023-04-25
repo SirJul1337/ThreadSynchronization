@@ -1,4 +1,5 @@
 ﻿using BagageSorteringsSystem;
+using BagageSorteringsSystem.DTO;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
@@ -9,92 +10,60 @@ namespace BagageSorteringsSystem;
 
 public class Program
 {
-    public static BlockingCollection<Baggage> Baggages = new();
-    public static BlockingCollection<Baggage> CustomerLine = new();
-    public static BlockingCollection<Baggage> LostBaggage = new();
-    public static Dictionary<int, BlockingCollection<Baggage>> TerminalQueues = new();
-    public static Dictionary<int, Plane> Planes = new();
-    public static Dictionary<int, Terminal> Terminals = new();
-    public static Dictionary<ConsoleKey, Action> NavDictionary = new();
-    
-    public static Logger Logger;
-    public static FlyingPlan FlyingPlan;
     public static ConsoleKey NavKey = ConsoleKey.A;
+    private static AirPortManager airPortManager = new AirPortManager();
+
     public static void Main()
     {
-        Startup();
+        airPortManager.Run();
 
 
         while (true)
         {
+
             Console.Clear();
-            Console.WriteLine("----------------------------------------------");
-            Console.WriteLine("             {0}                          ", DateTime.Now);
-            Console.WriteLine("----------------------------------------------");
-            if (NavDictionary.ContainsKey(NavKey))
+            Header();
+            if (AirPortManager.NavDictionary.ContainsKey(NavKey))
             {
-                NavDictionary[NavKey].Invoke(); //TODO: fix problem with checkin Add and remove
+               AirPortManager.NavDictionary[NavKey].Invoke(); //TODO: fix problem with checkin Add and remove
             }
-            Console.WriteLine("A. System overview  B. FlyingPlan  C. Checkin overview");
+            NavInstructions();
             Thread.Sleep(100);
 
         }
 
     }
+    private static void Header()
+    {
+        Console.WriteLine("----------------------------------------------");
+        Console.WriteLine("             {0}                          ", DateTime.Now);
+        Console.WriteLine("----------------------------------------------");
+    }
+    private static void NavInstructions()
+    {
+        Console.WriteLine("A. System overview  B. FlyingPlan  C. Checkin overview");
+    }
 
-    private static void Startup()
-    {
-        Logger = new LoggerConfiguration()
-        .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
-        .CreateLogger();
-        CustomerGenerater customer = new();
-        BaggageHandling handling = new();
-        ControlTower controlTower = new();
-        CheckInManager checkInManager = new();
-        ConsoleNavigation navigation = new();
-        Thread consoleNav = new(navigation.StartNavigations);
-        checkInManager.Add();
-        consoleNav.Start();
-        PopulateNavDirectory(checkInManager);
-        ThreadPool.QueueUserWorkItem(controlTower.ControlGates);
-        ThreadPool.QueueUserWorkItem(customer.AutoGenerate);
-        ThreadPool.QueueUserWorkItem(handling.Sorting);
-    }
-    /// <summary>
-    /// Method to populate my dictionary for my navigation
-    /// </summary>
-    /// <param name="checkInManager"></param>
-    private static void PopulateNavDirectory(CheckInManager checkInManager)
-    {
-        NavDictionary.Add(ConsoleKey.A, ViewOverview);
-        NavDictionary.Add(ConsoleKey.B, ViewFlyPlan);
-        NavDictionary.Add(ConsoleKey.C, ViewCheckIns);
-        NavDictionary.Add(ConsoleKey.P, checkInManager.Add);
-        NavDictionary.Add(ConsoleKey.M, checkInManager.Remove);
-    }
     /// <summary>
     /// Method to write out the dashboard to see informations of different Buffers and planes
     /// </summary>
-    private static void ViewOverview()
+    public static void ViewOverview()
     {
-        Console.WriteLine("Customers in queue: {0}", CustomerLine.Count);
+        DashboardOverviewDTO dashboard = airPortManager.GetDashboardInfo();
+        Console.WriteLine("Customers in queue: {0}", dashboard.customerLine.Count);
         Console.WriteLine("----------------------------------------------");
-        Console.WriteLine("Baggages in sorting system: {0}", Baggages.Count);
+        Console.WriteLine("Baggages in sorting system: {0}", dashboard.systemBaggages.Count);
         Console.WriteLine("----------------------------------------------");
 
-        for (int i = 0; i < TerminalQueues.Count; i++)
-        {
-
-        }
-        foreach (var item in TerminalQueues)
+        foreach (var item in dashboard.TerminalQueues)
         {
             int id = item.Key;
-            Console.WriteLine("Terminal {0} BaggageCount: {1}", id, TerminalQueues[id].Count);
-            if (Planes.ContainsKey(id))
+            Console.WriteLine("Terminal {0} BaggageCount: {1}", id, dashboard.TerminalQueues[id].Count);
+            if (dashboard.Planes.ContainsKey(id))
             {
-                Console.WriteLine("Distination {0}", Planes[id].Destination);
-                Console.WriteLine("Takeoff: {0}", Planes[id].Time);
-                Console.WriteLine("Plane {0} baggage onboard: {1}/{2}", id, Planes[id].Baggages.Count, Planes[id].MaxCount);
+                Console.WriteLine("Distination {0}", dashboard.Planes[id].Destination);
+                Console.WriteLine("Takeoff: {0}", dashboard.Planes[id].Time);
+                Console.WriteLine("Plane {0} baggage onboard: {1}/{2}", id, dashboard.Planes[id].Baggages.Count, dashboard.Planes[id].MaxCount);
             }
 
             Console.WriteLine("----------------------------------------------");
@@ -103,12 +72,12 @@ public class Program
     /// <summary>
     /// Method to write in console the flying plan
     /// </summary>
-    private static void ViewFlyPlan()
+    public static void ViewFlyPlan()
     {
-
-        for (int i = 0; i < FlyingPlan.FlyvePlaner.Count; i++)
+        List<Flyveplan> FlyvePlaner = airPortManager.GetFlyvePlan();
+        for (int i = 0; i < FlyvePlaner.Count; i++)
         {
-            Console.WriteLine("Gate {0} | Destination {1} | Time {2}", FlyingPlan.FlyvePlaner[i].GateId, FlyingPlan.FlyvePlaner[i].Destination, FlyingPlan.FlyvePlaner[i].Afgangstid);
+            Console.WriteLine("Gate {0} | Destination {1} | Time {2}", FlyvePlaner[i].GateId,FlyvePlaner[i].Destination, FlyvePlaner[i].Afgangstid);
             Console.WriteLine("---------------------------------------------------------------------------");
 
         }
@@ -118,10 +87,10 @@ public class Program
     /// <summary>
     /// Method to write in console to see all opened Checkins
     /// </summary>
-    private static void ViewCheckIns()
+    public static void ViewCheckIns()
     {
-        var openList = CheckInManager.CheckIns.Where(c => c.Alive == true).ToList();
-        for (int i = 0; i < openList.Count; i++)
+        CheckIn[] checkIns = airPortManager.GetCheckins();
+        for (int i = 0; i < checkIns.Length; i++)
         {
             Console.WriteLine("|----------------|");
             Console.WriteLine("|Check In box {0}  |", i);
@@ -130,4 +99,5 @@ public class Program
         Console.WriteLine("P. Open checkin  M. Close checkin ");
 
     }
+    
 }

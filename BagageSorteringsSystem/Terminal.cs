@@ -24,10 +24,10 @@ namespace BagageSorteringsSystem
         {
             while (true)
             {
-                if (Program.TerminalQueues.ContainsKey(GateId))
+                if (AirPortManager.TerminalQueues.ContainsKey(GateId))
                 {
-                    Baggage baggage = Program.TerminalQueues[GateId].Take();
-                    if (Program.Planes.ContainsKey(GateId) && PlaneDocked)
+                    Baggage baggage = AirPortManager.TerminalQueues[GateId].Take();
+                    if (ControlTower.Planes.ContainsKey(GateId) && PlaneDocked)
                     {
                         SendToPlaneBaggage(baggage);
                         Thread.Sleep(1500);
@@ -48,7 +48,7 @@ namespace BagageSorteringsSystem
         private void SendToPlaneBaggage(Baggage baggage)
         {
             baggage.Log.Add(String.Format("{0} | Baggage send to plane from gate {1}", DateTime.Now, GateId));
-            Program.Planes[GateId].Baggages.Enqueue(baggage);
+            ControlTower.Planes[GateId].Baggages.Enqueue(baggage);
         }
         /// <summary>
         /// Method to log on the baggage and send the baggage to the lostBaggage 
@@ -56,7 +56,7 @@ namespace BagageSorteringsSystem
         /// <param name="baggage"></param>
         private void SendToLostBaggage(Baggage baggage)
         {
-            Program.LostBaggage.Add(baggage);
+            AirPortManager.LostBaggage.Add(baggage);
             baggage.Log.Add(String.Format("{0} | Baggage send to lost baggage from gate {1}", DateTime.Now, GateId));
         }
     }

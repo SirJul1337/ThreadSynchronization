@@ -26,10 +26,10 @@ namespace BagageSorteringsSystem
             {
                 try
                 {
-                    if (Program.Baggages.Count < 50)
+                    if (AirPortManager.Baggages.Count < 50)
                     {
-                        Baggage baggage = Program.CustomerLine.Take();
-                        Program.Baggages.Add(baggage);
+                        Baggage baggage = CheckInManager.CustomerLine.Take();
+                        AirPortManager.Baggages.Add(baggage);
                     }
                 }
                 finally

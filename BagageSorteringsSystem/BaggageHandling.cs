@@ -16,33 +16,27 @@ namespace BagageSorteringsSystem
         {
             while (true)
             {
-                try
+                Baggage baggage = AirPortManager.Baggages.Take();
+                //Baggage baggage1 = Program.Baggages.Take();
+                int _gateId = baggage.GateId;
+
+
+                if (AirPortManager.TerminalQueues.ContainsKey(_gateId))
+                {
+                    //while (AirPortManager.TerminalQueues[_gateId].GetConsumingEnumerable().Count() >= 30)
+                    //{
+                    //}
+                    //TODO: find a way to wait if count is 30 or above
+                    baggage.Log.Add(String.Format("{0} | Arrived in sortingsystem", DateTime.Now));
+                    AirPortManager.TerminalQueues[_gateId].Add(baggage);
+                }
+                else
                 {
 
-                    Baggage baggage = Program.Baggages.Take();
-                    //Baggage baggage1 = Program.Baggages.Take();
-                    int _gateId = baggage.GateId;
-
-
-                    if (Program.TerminalQueues.ContainsKey(_gateId))
-                    {
-                        if (Program.TerminalQueues[_gateId].GetConsumingEnumerable().Count() >= 30)
-                        {
-                            baggage.Log.Add(String.Format("{0} | Arrived in sortingsystem", DateTime.Now));
-                            Program.TerminalQueues[_gateId].Add(baggage);
-                        }
-                    }
-                    else
-                    {
-
-                        Program.LostBaggage.Add(baggage);
-                    }
-
+                    AirPortManager.LostBaggage.Add(baggage);
                 }
-                finally
-                {
-                    Thread.Sleep(1000);
-                }
+                Thread.Sleep(1000);
+
             }
         }
 

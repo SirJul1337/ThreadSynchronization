@@ -11,6 +11,8 @@ namespace BagageSorteringsSystem
 {
     public class ControlTower
     {
+        public static Dictionary<int, Plane> Planes = new();
+        public static FlyingPlan FlyingPlan;
         /// <summary>
         /// Create objects for terminals and starts consuming baggage, and terminalsqueues added, and calling method to get objects of flyingplan and terminals
         /// </summary>
@@ -18,36 +20,36 @@ namespace BagageSorteringsSystem
         public async void ControlGates(object callback)
         {
 
-            Program.FlyingPlan = ConvertStringToFlyingPlan(ReadFile(@"../../../FileSystem/Flyveplan.json"));
+            FlyingPlan = ConvertStringToFlyingPlan(ReadFile(@"../../../FileSystem/Flyveplan.json"));
             List<Terminal> terminalList = ConvertStringToTerminal(ReadFile(@"../../../FileSystem/Terminals.json"));
             for (int i = 0; i < terminalList.Count; i++)
             {
-                Program.Terminals.Add(terminalList[i].GateId, terminalList[i]);
-                Program.Logger.Information("Terminal created Gate {0}", terminalList[i].GateId);
-                Program.TerminalQueues.Add(terminalList[i].GateId, new BlockingCollection<Baggage>());
-                Program.Logger.Information("TerminalQueue {0} added", Program.FlyingPlan.FlyvePlaner[i].GateId);
-                ThreadPool.QueueUserWorkItem(Program.Terminals[terminalList[i].GateId].ConsumeBaggage);
-                Program.Logger.Information("Terminal on Gate {0} start consuming", terminalList[i].GateId);
+                AirPortManager.Terminals.Add(terminalList[i].GateId, terminalList[i]);
+                AirPortManager.Logger.Information("Terminal created Gate {0}", terminalList[i].GateId);
+                AirPortManager.TerminalQueues.Add(terminalList[i].GateId, new BlockingCollection<Baggage>());
+                AirPortManager.Logger.Information("TerminalQueue {0} added", FlyingPlan.FlyvePlaner[i].GateId);
+                ThreadPool.QueueUserWorkItem(AirPortManager.Terminals[terminalList[i].GateId].ConsumeBaggage);
+                AirPortManager.Logger.Information("Terminal on Gate {0} start consuming", terminalList[i].GateId);
             }
 
             while (true)
             {
 
-                foreach (Terminal terminal in Program.Terminals.Values)
+                foreach (Terminal terminal in AirPortManager.Terminals.Values)
                 {
 
-                    if (Monitor.TryEnter(Program.FlyingPlan.FlyvePlaner))
+                    if (Monitor.TryEnter(FlyingPlan.FlyvePlaner))
                     {
-                        var plan = Program.FlyingPlan.FlyvePlaner.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
+                        var plan = FlyingPlan.FlyvePlaner.Where(x => x.GateId == terminal.GateId).FirstOrDefault();
                         if (plan != null)
                         {
-                            if (!Program.Planes.ContainsKey(plan.GateId))
+                            if (!Planes.ContainsKey(plan.GateId))
                             {
-                                Program.Planes.Add(plan.GateId, new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
-                                ThreadPool.QueueUserWorkItem(Program.Planes[plan.GateId].Dock);
+                                Planes.Add(plan.GateId, new Plane(plan.GateId, plan.MaxCustomers, plan.Destination, plan.Afgangstid));
+                                ThreadPool.QueueUserWorkItem(Planes[plan.GateId].Dock);
                             }
                         }
-                        Monitor.Exit(Program.FlyingPlan.FlyvePlaner);
+                        Monitor.Exit(FlyingPlan.FlyvePlaner);
                     }
                 }
             }

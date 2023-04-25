@@ -18,12 +18,12 @@ namespace BagageSorteringsSystem
             {
                 try
                 {
-                    if (Program.CustomerLine.Count < 100)
+                    if (CheckInManager.CustomerLine.Count < 100)
                     {
                         Random r = new Random();
                         Baggage baggage = new Baggage("Test", r.Next(1, 3));
                         baggage.Log.Add(String.Format("{0} | Baggage auto generated", DateTime.Now));
-                        Program.CustomerLine.Add(baggage);
+                        CheckInManager.CustomerLine.Add(baggage);
                     }
                 }
                 finally

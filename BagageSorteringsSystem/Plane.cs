@@ -35,8 +35,8 @@ namespace BagageSorteringsSystem
         /// <param name="callback"></param>
         public void Dock(object callback)
         {
-            Program.Terminals[Id].PlaneDocked = true;
-            Program.Logger.Information("Plane {0} Docked to gate");
+            AirPortManager.Terminals[Id].PlaneDocked = true;
+            AirPortManager.Logger.Information("Plane {0} Docked to gate");
             while (!_takeOff)
             {
                 if (Baggages.Count >= MaxCount || DateTime.Now >= Time  )
@@ -55,13 +55,13 @@ namespace BagageSorteringsSystem
         /// </summary>
         private void Fly()
         {
-            Program.Logger.Information("Plane {0} takes off", Id);
+            AirPortManager.Logger.Information("Plane {0} takes off", Id);
             _takeOff = true;
-            Monitor.Enter(Program.FlyingPlan.FlyvePlaner);
-            Program.FlyingPlan.FlyvePlaner.Remove(Program.FlyingPlan.FlyvePlaner.Where(f => f.GateId == Id).FirstOrDefault());
-            Monitor.Exit(Program.FlyingPlan.FlyvePlaner);
-            Program.Terminals[Id].PlaneDocked = false;
-            Program.Planes.Remove(Id);
+            Monitor.Enter(ControlTower.FlyingPlan.FlyvePlaner);
+            ControlTower.FlyingPlan.FlyvePlaner.Remove(ControlTower.FlyingPlan.FlyvePlaner.Where(f => f.GateId == Id).FirstOrDefault());
+            Monitor.Exit(ControlTower.FlyingPlan.FlyvePlaner);
+            AirPortManager.Terminals[Id].PlaneDocked = false;
+            ControlTower.Planes.Remove(Id);
         }
     }
 }
